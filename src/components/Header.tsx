@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Briefcase, User, LogOut } from "lucide-react";
+import { Briefcase, User, LogOut, Calendar } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Header() {
@@ -29,6 +29,16 @@ export default function Header() {
             >
               Join as Provider
             </Link>
+
+            {user && (
+              <Link
+                href="/provider/schedule"
+                className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-[#2563EB] transition-colors"
+              >
+                <Calendar className="w-4 h-4" />
+                <span className="hidden sm:inline">My Schedule</span>
+              </Link>
+            )}
 
             {loading ? (
               <div className="w-24 h-10 bg-slate-100 rounded-lg animate-pulse" />

@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Wrench, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -34,19 +36,12 @@ export default function LoginPage() {
     }
 
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const result = await login(formData.email, formData.password);
 
-      const data = await res.json();
-
-      if (data.success) {
+      if (result.success) {
         router.push("/");
-        router.refresh();
       } else {
-        setError(data.error || "Failed to login. Please try again.");
+        setError(result.error || "Failed to login. Please try again.");
       }
     } catch (err) {
       setError("Something went wrong. Please try again.");

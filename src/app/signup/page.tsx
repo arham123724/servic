@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Wrench, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SignupPage() {
   const router = useRouter();
+  const { signup } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -49,23 +51,16 @@ export default function SignupPage() {
     }
 
     try {
-      const res = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+      const result = await signup(
+        formData.name,
+        formData.email,
+        formData.password
+      );
 
-      const data = await res.json();
-
-      if (data.success) {
+      if (result.success) {
         router.push("/");
-        router.refresh();
       } else {
-        setError(data.error || "Failed to create account. Please try again.");
+        setError(result.error || "Failed to create account. Please try again.");
       }
     } catch (err) {
       setError("Something went wrong. Please try again.");

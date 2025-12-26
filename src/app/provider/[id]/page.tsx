@@ -15,14 +15,29 @@ import {
   CheckCircle,
   Briefcase,
   Mail,
+  Calendar,
 } from "lucide-react";
 import { Provider } from "@/types";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ProviderDetailPage() {
   const params = useParams();
+  const { user, loading: authLoading } = useAuth();
   const [provider, setProvider] = useState<Provider | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  
+  // Booking form state
+  const [showBookingForm, setShowBookingForm] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookingError, setBookingError] = useState("");
+  const [bookingData, setBookingData] = useState({
+    date: "",
+    timeSlot: "",
+    clientPhone: "",
+    notes: "",
+  });
 
   useEffect(() => {
     const fetchProvider = async () => {
@@ -90,7 +105,59 @@ export default function ProviderDetailPage() {
     return `${formattedHour}:${minutes} ${ampm}`;
   };
 
-  if (loading) {
+  const handleBookingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!user) {
+      setBookingError("Please login to book this provider");
+      return;
+    }
+
+    setBookingLoading(true);
+    setBookingError("");
+
+    try {
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          providerId: provider?._id,
+          ...bookingData,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setBookingSuccess(true);
+        setBookingData({ date: "", timeSlot: "", clientPhone: "", notes: "" });
+        setTimeout(() => {
+          setShowBookingForm(false);
+          setBookingSuccess(false);
+        }, 3000);
+      } else {
+        setBookingError(data.error || "Failed to create booking");
+      }
+    } catch (err) {
+      setBookingError("Something went wrong. Please try again.");
+      console.error(err);
+    } finally {
+      setBookingLoading(false);
+    }
+  };
+
+  const generateTimeSlots = () => {
+    const slots = [];
+    for (let hour = 9; hour <= 17; hour++) {
+      slots.push(`${hour.toString().padStart(2, "0")}:00`);
+      if (hour < 17) {
+        slots.push(`${hour.toString().padStart(2, "0")}:30`);
+      }
+    }
+    return slots;
+  };
+
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -334,6 +401,139 @@ export default function ProviderDetailPage() {
                   WhatsApp
                 </button>
               </div>
+
+              {/* Booking Button */}
+              {user && (
+                <div className="pt-4">
+                  <button
+                    onClick={() => setShowBookingForm(!showBookingForm)}
+                    className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors cursor-pointer"
+                  >
+                    <Calendar className="w-5 h-5" />
+                    {showBookingForm ? "Cancel Booking" : "Book Appointment"}
+                  </button>
+                </div>
+              )}
+
+              {/* Booking Form */}
+              {showBookingForm && user && (
+                <div className="border-t-2 border-purple-200 pt-6 bg-gradient-to-br from-purple-50 to-blue-50 p-6 rounded-lg">
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                    Schedule an Appointment
+                  </h3>
+                  <p className="text-slate-600 mb-6">
+                    Book a time slot that works best for you
+                  </p>
+
+                  {bookingSuccess ? (
+                    <div className="bg-green-100 border-2 border-green-300 text-green-800 px-6 py-4 rounded-lg mb-4 shadow-sm">
+                      <p className="font-bold text-lg">Booking successful! 🎉</p>
+                      <p className="text-sm mt-1">The provider will contact you shortly to confirm.</p>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleBookingSubmit} className="space-y-5">
+                      {bookingError && (
+                        <div className="bg-red-100 border-2 border-red-300 text-red-800 px-6 py-4 rounded-lg shadow-sm">
+                          <p className="font-semibold">{bookingError}</p>
+                        </div>
+                      )}
+
+                      <div>
+                        <label className="block text-sm font-bold text-slate-800 mb-2">
+                          📅 Select Date
+                        </label>
+                        <input
+                          type="date"
+                          required
+                          min={new Date().toISOString().split("T")[0]}
+                          value={bookingData.date}
+                          onChange={(e) =>
+                            setBookingData({ ...bookingData, date: e.target.value })
+                          }
+                          className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 shadow-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-bold text-slate-800 mb-2">
+                          🕐 Select Time Slot
+                        </label>
+                        <select
+                          required
+                          value={bookingData.timeSlot}
+                          onChange={(e) =>
+                            setBookingData({ ...bookingData, timeSlot: e.target.value })
+                          }
+                          className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 shadow-sm"
+                        >
+                          <option value="" className="text-slate-500">Choose a time</option>
+                          {generateTimeSlots().map((slot) => (
+                            <option key={slot} value={slot} className="text-slate-900">
+                              {formatTime(slot)}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-bold text-slate-800 mb-2">
+                          📱 Your Phone Number
+                        </label>
+                        <input
+                          type="tel"
+                          required
+                          placeholder="+92 300 1234567"
+                          value={bookingData.clientPhone}
+                          onChange={(e) =>
+                            setBookingData({ ...bookingData, clientPhone: e.target.value })
+                          }
+                          className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-900 font-medium placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 shadow-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-bold text-slate-800 mb-2">
+                          📝 Additional Notes (Optional)
+                        </label>
+                        <textarea
+                          rows={3}
+                          placeholder="Describe your requirements..."
+                          value={bookingData.notes}
+                          onChange={(e) =>
+                            setBookingData({ ...bookingData, notes: e.target.value })
+                          }
+                          className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-900 font-medium placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 resize-none shadow-sm"
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={bookingLoading}
+                        className="w-full px-6 py-4 bg-purple-600 hover:bg-purple-700 disabled:bg-slate-400 disabled:cursor-not-allowed text-white font-bold text-lg rounded-lg transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                      >
+                        {bookingLoading ? "Booking..." : "✓ Confirm Booking"}
+                      </button>
+                    </form>
+                  )}
+                </div>
+              )}
+
+              {!user && (
+                <div className="border-t-2 border-slate-200 pt-6">
+                  <div className="bg-gradient-to-br from-slate-50 to-blue-50 p-6 rounded-lg text-center border-2 border-slate-200">
+                    <p className="text-slate-800 font-medium text-lg">
+                      <Link href="/login" className="text-purple-600 hover:text-purple-700 font-bold underline">
+                        Login
+                      </Link>
+                      {" "}or{" "}
+                      <Link href="/signup" className="text-purple-600 hover:text-purple-700 font-bold underline">
+                        Sign up
+                      </Link>
+                      {" "}to book an appointment
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

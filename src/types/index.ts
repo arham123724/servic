@@ -37,6 +37,21 @@ export interface Lead {
   timestamp: string;
 }
 
+export interface Booking {
+  _id: string;
+  providerId: string;
+  userId: string;
+  clientName: string;
+  clientEmail: string;
+  clientPhone: string;
+  date: string;
+  timeSlot: string;
+  notes?: string;
+  status: "pending" | "confirmed" | "completed" | "cancelled";
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;

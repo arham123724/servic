@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     const body = await request.json();
-    const { name, phone, bio, category, location } = body;
+    const { name, phone, bio, category, location, email, address, hourlyRate, experience, services, workingHours } = body;
 
     // Basic validation
     if (!name || !phone || !category || !location) {
@@ -50,14 +50,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const provider = await Provider.create({
+    // Get session to link provider to user
+    const { getSession } = await import("@/lib/auth");
+    const session = await getSession();
+
+    const providerData: any = {
       name,
       phone,
       bio: bio || "",
       category,
       location,
       isVerified: false,
-    });
+    };
+
+    // Add optional fields
+    if (email) providerData.email = email;
+    if (address) providerData.address = address;
+    if (hourlyRate) providerData.hourlyRate = hourlyRate;
+    if (experience) providerData.experience = experience;
+    if (services) providerData.services = services;
+    if (workingHours) providerData.workingHours = workingHours;
+    
+    // Link to user if logged in
+    if (session) {
+      providerData.userId = session.userId;
+    }
+
+    const provider = await Provider.create(providerData);
 
     return NextResponse.json({ success: true, data: provider }, { status: 201 });
   } catch (error) {
