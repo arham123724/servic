@@ -2,11 +2,32 @@ export interface Provider {
   _id: string;
   name: string;
   phone: string;
+  email?: string;
   bio?: string;
   category: "Electrician" | "Plumber" | "Tutor" | "Carpenter" | "Mechanic";
   location: string;
+  address?: string;
+  hourlyRate?: number;
+  experience?: number;
+  services?: string[];
+  workingHours?: {
+    start: string;
+    end: string;
+    days: string[];
+  };
   isVerified: boolean;
+  rating?: number;
+  totalReviews?: number;
+  userId?: string;
   createdAt: string;
+  updatedAt: string;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: "user" | "provider" | "admin";
 }
 
 export interface Lead {

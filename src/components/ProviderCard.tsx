@@ -1,6 +1,7 @@
 "use client";
 
-import { Phone, MessageCircle, MapPin, BadgeCheck } from "lucide-react";
+import Link from "next/link";
+import { Phone, MessageCircle, MapPin, BadgeCheck, DollarSign, Clock } from "lucide-react";
 import { Provider } from "@/types";
 
 interface ProviderCardProps {
@@ -16,7 +17,9 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function ProviderCard({ provider }: ProviderCardProps) {
-  const handleCall = async () => {
+  const handleCall = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     try {
       // Log the lead first
       await fetch("/api/leads", {
@@ -31,7 +34,9 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
     window.location.href = `tel:${provider.phone}`;
   };
 
-  const handleWhatsApp = async () => {
+  const handleWhatsApp = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     try {
       // Log the lead first
       await fetch("/api/leads", {
@@ -48,58 +53,76 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-slate-100">
-      {/* Card Header */}
-      <div className="p-5">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <h3 className="text-lg font-semibold text-slate-800">
-              {provider.name}
-            </h3>
-            {provider.isVerified && (
-              <BadgeCheck className="w-5 h-5 text-blue-600" />
+    <Link href={`/provider/${provider._id}`} className="block">
+      <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-slate-100 cursor-pointer">
+        {/* Card Header */}
+        <div className="p-5">
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-slate-800">
+                {provider.name}
+              </h3>
+              {provider.isVerified && (
+                <BadgeCheck className="w-5 h-5 text-blue-600" />
+              )}
+            </div>
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-medium ${
+                categoryColors[provider.category] || "bg-slate-100 text-slate-800"
+              }`}
+            >
+              {provider.category}
+            </span>
+          </div>
+
+          {/* Location */}
+          <div className="flex items-center gap-1.5 text-slate-500 text-sm mb-3">
+            <MapPin className="w-4 h-4" />
+            <span>{provider.location}</span>
+          </div>
+
+          {/* Quick Stats */}
+          <div className="flex items-center gap-4 text-sm text-slate-600 mb-3">
+            {provider.hourlyRate && (
+              <div className="flex items-center gap-1">
+                <DollarSign className="w-4 h-4 text-[#2563EB]" />
+                <span>PKR {provider.hourlyRate}/hr</span>
+              </div>
+            )}
+            {provider.experience && (
+              <div className="flex items-center gap-1">
+                <Clock className="w-4 h-4 text-[#2563EB]" />
+                <span>{provider.experience} yrs exp</span>
+              </div>
             )}
           </div>
-          <span
-            className={`px-3 py-1 rounded-full text-xs font-medium ${
-              categoryColors[provider.category] || "bg-slate-100 text-slate-800"
-            }`}
+
+          {/* Bio */}
+          {provider.bio && (
+            <p className="text-slate-600 text-sm line-clamp-2 mb-4">
+              {provider.bio}
+            </p>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex border-t border-slate-100">
+          <button
+            onClick={handleCall}
+            className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-medium transition-colors duration-200 cursor-pointer"
           >
-            {provider.category}
-          </span>
+            <Phone className="w-5 h-5" />
+            <span>Call</span>
+          </button>
+          <button
+            onClick={handleWhatsApp}
+            className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#25D366] hover:bg-[#1fb855] text-white font-medium transition-colors duration-200 cursor-pointer"
+          >
+            <MessageCircle className="w-5 h-5" />
+            <span>WhatsApp</span>
+          </button>
         </div>
-
-        {/* Location */}
-        <div className="flex items-center gap-1.5 text-slate-500 text-sm mb-3">
-          <MapPin className="w-4 h-4" />
-          <span>{provider.location}</span>
-        </div>
-
-        {/* Bio */}
-        {provider.bio && (
-          <p className="text-slate-600 text-sm line-clamp-2 mb-4">
-            {provider.bio}
-          </p>
-        )}
       </div>
-
-      {/* Action Buttons */}
-      <div className="flex border-t border-slate-100">
-        <button
-          onClick={handleCall}
-          className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-medium transition-colors duration-200 cursor-pointer"
-        >
-          <Phone className="w-5 h-5" />
-          <span>Call</span>
-        </button>
-        <button
-          onClick={handleWhatsApp}
-          className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#25D366] hover:bg-[#1fb855] text-white font-medium transition-colors duration-200 cursor-pointer"
-        >
-          <MessageCircle className="w-5 h-5" />
-          <span>WhatsApp</span>
-        </button>
-      </div>
-    </div>
+    </Link>
   );
 }

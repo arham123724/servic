@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Wrench, Plus } from "lucide-react";
-import Link from "next/link";
+import { Briefcase } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import ProviderGrid from "@/components/ProviderGrid";
+import Header from "@/components/Header";
 import { Provider, ApiResponse } from "@/types";
 
 export default function Home() {
@@ -64,26 +64,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2">
-              <Wrench className="w-8 h-8 text-[#2563EB]" />
-              <span className="text-xl font-bold text-slate-800">
-                LocalServe
-              </span>
-            </div>
-            <Link
-              href="/register"
-              className="flex items-center gap-2 px-4 py-2 bg-[#2563EB] hover:bg-[#1d4ed8] text-white text-sm font-medium rounded-lg transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">Register as Provider</span>
-              <span className="sm:hidden">Register</span>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-[#2563EB] to-[#1e40af] text-white py-16 md:py-24">
@@ -137,11 +118,15 @@ export default function Home() {
       <footer className="bg-slate-800 text-slate-400 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Wrench className="w-6 h-6 text-[#2563EB]" />
-            <span className="text-lg font-semibold text-white">LocalServe</span>
+            <div className="w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center">
+              <Briefcase className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-lg font-semibold text-white">
+              Local<span className="text-[#2563EB]">Service</span>
+            </span>
           </div>
           <p className="text-sm">
-            © {new Date().getFullYear()} LocalServe. All rights reserved.
+            © {new Date().getFullYear()} LocalService. All rights reserved.
           </p>
           <p className="text-xs mt-2">
             Connecting you with trusted local service professionals.
