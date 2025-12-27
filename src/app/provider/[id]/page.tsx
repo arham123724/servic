@@ -570,12 +570,12 @@ export default function ProviderDetailPage() {
                 </button>
               </div>
 
-              {/* Book Appointment Button */}
+              {/* Book Appointment Button - Sticky on mobile, normal on desktop */}
               {user && !showBookingForm && (
-                <div className="pt-2">
+                <div className="fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 p-4 z-50 md:static md:w-auto md:bg-transparent md:border-t-0 md:p-0 md:pt-2 md:z-auto">
                   <button
                     onClick={() => setShowBookingForm(true)}
-                    className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg transition-all cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg transition-all cursor-pointer shadow-lg md:shadow-none"
                   >
                     <Calendar className="w-5 h-5" />
                     Book Appointment
