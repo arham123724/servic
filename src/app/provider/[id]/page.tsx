@@ -790,6 +790,106 @@ export default function ProviderDetailPage() {
                   </div>
                 </div>
               )}
+
+              {/* Customer Reviews Section - Category Aware */}
+              {(() => {
+                // Category-specific mock reviews
+                const categoryReviews: Record<string, { name: string; stars: number; text: string; time: string }[]> = {
+                  Electrician: [
+                    { name: "Ali Khan", stars: 5, text: "Excellent work! Fixed all the wiring issues in my house. Very professional and knew exactly what he was doing.", time: "2 days ago" },
+                    { name: "Sara Ahmed", stars: 4, text: "Installed new lights and fans quickly. Good communication and fair pricing.", time: "1 week ago" },
+                  ],
+                  Plumber: [
+                    { name: "Hassan Raza", stars: 5, text: "Fixed a major leak under the kitchen sink. Arrived on time and cleaned up after the job. Highly recommend!", time: "3 days ago" },
+                    { name: "Fatima Bibi", stars: 4, text: "Replaced old pipes and fixed the taps. Professional behavior and reasonable rates.", time: "5 days ago" },
+                  ],
+                  Tutor: [
+                    { name: "Ayesha Malik", stars: 5, text: "My son's math grades improved from C to A in just two months! Excellent teaching style and very patient.", time: "1 week ago" },
+                    { name: "Ahmed Nawaz", stars: 5, text: "Great tutor for O-Levels Physics. Explains concepts clearly and provides helpful practice materials.", time: "2 weeks ago" },
+                  ],
+                  Mechanic: [
+                    { name: "Bilal Shah", stars: 5, text: "Did a complete engine tune-up and oil change. My car runs like new now. Very knowledgeable mechanic!", time: "4 days ago" },
+                    { name: "Usman Ali", stars: 4, text: "Fixed the brakes and checked the suspension. Honest about pricing and quick service.", time: "1 week ago" },
+                  ],
+                  Carpenter: [
+                    { name: "Zainab Fatima", stars: 5, text: "Made beautiful custom cabinets for my kitchen. Attention to detail is amazing! Very skilled craftsman.", time: "3 days ago" },
+                    { name: "Imran Khan", stars: 4, text: "Repaired old furniture and it looks brand new. Good quality work and fair pricing.", time: "6 days ago" },
+                  ],
+                };
+
+                // Get reviews based on category, with default fallback
+                const reviews = categoryReviews[provider.category] || [
+                  { name: "Muhammad Hassan", stars: 5, text: "Very professional and punctual. Did excellent work and was very thorough with the job.", time: "2 days ago" },
+                  { name: "Aisha Begum", stars: 4, text: "Good service overall. Would recommend to others looking for quality work.", time: "1 week ago" },
+                ];
+
+                // Calculate average rating (slightly randomized per category)
+                const categoryRatings: Record<string, number> = {
+                  Electrician: 4.8,
+                  Plumber: 4.7,
+                  Tutor: 4.9,
+                  Mechanic: 4.6,
+                  Carpenter: 4.8,
+                };
+                const avgRating = categoryRatings[provider.category] || 4.7;
+                const reviewCount = provider.category === "Tutor" ? 18 : provider.category === "Mechanic" ? 9 : 12;
+
+                return (
+                  <div className="border-t border-slate-200 pt-6 mt-6">
+                    {/* Header with Title and Write Review Button */}
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-lg font-bold text-slate-900">
+                        Customer Reviews
+                      </h3>
+                      {user && (
+                        <button className="px-4 py-2 border-2 border-slate-900 text-slate-900 font-semibold rounded-lg hover:bg-slate-50 transition-colors">
+                          Write a Review
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Rating Summary and Reviews Grid */}
+                    <div className="grid md:grid-cols-3 gap-6">
+                      {/* Rating Summary Card */}
+                      <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 text-center">
+                        <div className="text-5xl font-bold text-slate-900 mb-2">{avgRating}</div>
+                        <div className="flex items-center justify-center gap-1 mb-2">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className={`w-5 h-5 ${star <= Math.round(avgRating) ? "text-yellow-400 fill-yellow-400" : "text-slate-300"}`}
+                            />
+                          ))}
+                        </div>
+                        <p className="text-sm text-slate-500">Based on {reviewCount} reviews</p>
+                      </div>
+
+                      {/* Reviews List */}
+                      <div className="md:col-span-2 space-y-4">
+                        {reviews.map((review, index) => (
+                          <div key={index} className="border border-slate-200 rounded-lg p-4 bg-white">
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <p className="font-semibold text-slate-900">{review.name}</p>
+                                <p className="text-xs text-slate-400">{review.time}</p>
+                              </div>
+                              <div className="flex items-center gap-0.5">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <Star
+                                    key={star}
+                                    className={`w-4 h-4 ${star <= review.stars ? "text-yellow-400 fill-yellow-400" : "text-slate-300"}`}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                            <p className="text-slate-600 text-sm">{review.text}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>
