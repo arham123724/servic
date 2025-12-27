@@ -70,13 +70,19 @@ export async function POST(request: NextRequest) {
     if (experience) providerData.experience = experience;
     if (services) providerData.services = services;
     if (workingHours) providerData.workingHours = workingHours;
-    
+
     // Link to user if logged in
     if (session) {
       providerData.userId = session.userId;
     }
 
     const provider = await Provider.create(providerData);
+
+    // Update the user's role to 'provider' if logged in
+    if (session) {
+      const User = (await import("@/models/User")).default;
+      await User.findByIdAndUpdate(session.userId, { role: "provider" });
+    }
 
     return NextResponse.json({ success: true, data: provider }, { status: 201 });
   } catch (error) {
