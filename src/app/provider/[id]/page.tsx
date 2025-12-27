@@ -441,6 +441,38 @@ export default function ProviderDetailPage() {
                 </div>
               )}
 
+              {/* Skills & Expertise */}
+              {(() => {
+                // Define skills based on category
+                const categorySkills: Record<string, string[]> = {
+                  Tutor: ["Math", "Physics", "O-Levels", "A-Levels", "Online Classes"],
+                  Electrician: ["Wiring", "AC Repair", "Installation", "Maintenance", "Troubleshooting"],
+                  Plumber: ["Pipe Fitting", "Leak Repair", "Water Heater", "Drain Cleaning", "Installation"],
+                  Carpenter: ["Furniture Making", "Repairs", "Custom Cabinets", "Wood Finishing", "Installation"],
+                  Mechanic: ["Engine Repair", "Oil Change", "Brake Service", "Diagnostics", "AC Repair"],
+                };
+
+                // Get skills based on category, with default fallback
+                const skills = categorySkills[provider.category] || ["Professional Service", "Quality Work", "Experienced"];
+
+                return (
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-900 mb-3">
+                      Skills & Expertise
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {skills.map((skill: string) => (
+                        <span
+                          key={skill}
+                          className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-medium"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
               {/* Services */}
               {provider.services && provider.services.length > 0 && (
                 <div>
