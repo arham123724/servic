@@ -12,11 +12,12 @@ export interface IBooking extends Document {
   timeSlot: string;
   notes?: string;
   status: BookingStatus;
+  isNew: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const BookingSchema = new Schema<IBooking>(
+const BookingSchema = new Schema(
   {
     providerId: {
       type: Schema.Types.ObjectId,
@@ -61,6 +62,10 @@ const BookingSchema = new Schema<IBooking>(
       type: String,
       enum: ["pending", "confirmed", "completed", "cancelled"],
       default: "pending",
+    },
+    isNew: {
+      type: Boolean,
+      default: true,
     },
   },
   {

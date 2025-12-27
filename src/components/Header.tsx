@@ -1,11 +1,39 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Briefcase, User, LogOut, Calendar } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Header() {
   const { user, logout, loading } = useAuth();
+  const [newBookingsCount, setNewBookingsCount] = useState(0);
+
+  useEffect(() => {
+    const fetchNewBookingsCount = async () => {
+      if (!user) return;
+
+      try {
+        const res = await fetch("/api/bookings/my-provider-bookings");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.data) {
+            const newCount = data.data.filter((b: any) => b.isNew).length;
+            setNewBookingsCount(newCount);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch new bookings count:", error);
+      }
+    };
+
+    if (user) {
+      fetchNewBookingsCount();
+      // Refresh every 30 seconds
+      const interval = setInterval(fetchNewBookingsCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -33,10 +61,15 @@ export default function Header() {
             {user && (
               <Link
                 href="/provider/schedule"
-                className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-[#2563EB] transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-[#2563EB] transition-colors relative"
               >
                 <Calendar className="w-4 h-4" />
                 <span className="hidden sm:inline">My Schedule</span>
+                {newBookingsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center animate-pulse">
+                    {newBookingsCount}
+                  </span>
+                )}
               </Link>
             )}
 

@@ -48,6 +48,7 @@ export interface Booking {
   timeSlot: string;
   notes?: string;
   status: "pending" | "confirmed" | "completed" | "cancelled";
+  isNew: boolean;
   createdAt: string;
   updatedAt: string;
 }

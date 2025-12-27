@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Booking from "@/models/Booking";
-import { getSession } from "@/lib/auth";
 
-// GET /api/bookings/provider/[id] - Get all bookings for a specific provider
+// GET /api/bookings/provider/[id] - Get all booked time slots for a provider (anonymous for clients viewing)
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -11,27 +10,35 @@ export async function GET(
   try {
     await dbConnect();
 
-    // Check authentication
-    const session = await getSession();
-    if (!session) {
-      return NextResponse.json(
-        { success: false, error: "Authentication required" },
-        { status: 401 }
-      );
+    const { id } = await params;
+    const { searchParams } = new URL(request.url);
+    const dateParam = searchParams.get("date");
+
+    // Build query for booked slots only
+    const query: any = {
+      providerId: id,
+      status: { $in: ["pending", "confirmed"] },
+    };
+
+    // If date is provided, filter by that date
+    if (dateParam) {
+      const date = new Date(dateParam);
+      query.date = date;
     }
 
-    const { id } = await params;
-
-    // Get bookings for this provider
-    const bookings = await Booking.find({ providerId: id })
-      .populate("userId", "name email")
+    // Get booked slots (only return date and timeSlot, no personal info for privacy)
+    const bookings = await Booking.find(query)
+      .select("date timeSlot")
       .sort({ date: 1, timeSlot: 1 });
 
-    return NextResponse.json({ success: true, data: bookings });
+    return NextResponse.json({
+      success: true,
+      data: bookings,
+    });
   } catch (error) {
-    console.error("Error fetching provider bookings:", error);
+    console.error("Error fetching booked slots:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to fetch bookings" },
+      { success: false, error: "Failed to fetch booked slots" },
       { status: 500 }
     );
   }

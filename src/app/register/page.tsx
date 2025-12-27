@@ -19,6 +19,7 @@ import {
   ListChecks,
 } from "lucide-react";
 import { CATEGORIES } from "@/models/Provider";
+import { validateEmail, validatePhone, getEmailError, getPhoneError } from "@/lib/validation";
 
 const DAYS_OF_WEEK = [
   "Monday",
@@ -102,6 +103,20 @@ export default function RegisterPage() {
       !formData.location
     ) {
       setError("Please fill in all required fields.");
+      setLoading(false);
+      return;
+    }
+
+    // Validate phone number
+    if (!validatePhone(formData.phone)) {
+      setError(getPhoneError(formData.phone));
+      setLoading(false);
+      return;
+    }
+
+    // Validate email if provided
+    if (formData.email && !validateEmail(formData.email)) {
+      setError(getEmailError(formData.email));
       setLoading(false);
       return;
     }

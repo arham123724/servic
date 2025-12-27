@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Provider } from "@/types";
 import { useAuth } from "@/context/AuthContext";
+import { validatePhone, getPhoneError } from "@/lib/validation";
 
 export default function ProviderDetailPage() {
   const params = useParams();
@@ -26,6 +27,7 @@ export default function ProviderDetailPage() {
   const [provider, setProvider] = useState<Provider | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [bookedSlots, setBookedSlots] = useState<Array<{ date: string; timeSlot: string }>>([]);
   
   // Booking form state
   const [showBookingForm, setShowBookingForm] = useState(false);
@@ -55,8 +57,23 @@ export default function ProviderDetailPage() {
       }
     };
 
+    const fetchBookedSlots = async () => {
+      try {
+        const response = await fetch(`/api/bookings/provider/${params.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setBookedSlots(data.data);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch booked slots:", err);
+      }
+    };
+
     if (params.id) {
       fetchProvider();
+      fetchBookedSlots();
     }
   }, [params.id]);
 
@@ -113,6 +130,12 @@ export default function ProviderDetailPage() {
       return;
     }
 
+    // Validate phone number
+    if (!validatePhone(bookingData.clientPhone)) {
+      setBookingError(getPhoneError(bookingData.clientPhone));
+      return;
+    }
+
     setBookingLoading(true);
     setBookingError("");
 
@@ -131,6 +154,16 @@ export default function ProviderDetailPage() {
       if (data.success) {
         setBookingSuccess(true);
         setBookingData({ date: "", timeSlot: "", clientPhone: "", notes: "" });
+        
+        // Refresh booked slots
+        const response = await fetch(`/api/bookings/provider/${params.id}`);
+        if (response.ok) {
+          const slotsData = await response.json();
+          if (slotsData.success) {
+            setBookedSlots(slotsData.data);
+          }
+        }
+        
         setTimeout(() => {
           setShowBookingForm(false);
           setBookingSuccess(false);
@@ -147,14 +180,41 @@ export default function ProviderDetailPage() {
   };
 
   const generateTimeSlots = () => {
+    // Check if provider has working hours with start and end times
+    if (!provider?.workingHours?.start || !provider?.workingHours?.end) {
+      // Default slots if no working hours set
+      const slots = [];
+      for (let hour = 9; hour <= 17; hour++) {
+        slots.push(`${hour.toString().padStart(2, "0")}:00`);
+        if (hour < 17) {
+          slots.push(`${hour.toString().padStart(2, "0")}:30`);
+        }
+      }
+      return slots;
+    }
+
+    // Parse working hours
+    const startHour = parseInt(provider.workingHours.start.split(":")[0]);
+    const endHour = parseInt(provider.workingHours.end.split(":")[0]);
+    
     const slots = [];
-    for (let hour = 9; hour <= 17; hour++) {
+    for (let hour = startHour; hour <= endHour; hour++) {
       slots.push(`${hour.toString().padStart(2, "0")}:00`);
-      if (hour < 17) {
+      if (hour < endHour) {
         slots.push(`${hour.toString().padStart(2, "0")}:30`);
       }
     }
     return slots;
+  };
+
+  const isSlotBooked = (timeSlot: string) => {
+    if (!bookingData.date) return false;
+    
+    return bookedSlots.some(
+      (slot) =>
+        new Date(slot.date).toDateString() === new Date(bookingData.date).toDateString() &&
+        slot.timeSlot === timeSlot
+    );
   };
 
   if (loading || authLoading) {
@@ -467,12 +527,25 @@ export default function ProviderDetailPage() {
                           className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 shadow-sm"
                         >
                           <option value="" className="text-slate-500">Choose a time</option>
-                          {generateTimeSlots().map((slot) => (
-                            <option key={slot} value={slot} className="text-slate-900">
-                              {formatTime(slot)}
-                            </option>
-                          ))}
+                          {generateTimeSlots().map((slot) => {
+                            const booked = isSlotBooked(slot);
+                            return (
+                              <option 
+                                key={slot} 
+                                value={slot} 
+                                disabled={booked}
+                                className={booked ? "text-slate-400 bg-slate-100" : "text-slate-900"}
+                              >
+                                {formatTime(slot)} {booked ? "🔒 Booked" : "✅ Available"}
+                              </option>
+                            );
+                          })}
                         </select>
+                        {bookingData.date && (
+                          <p className="text-xs text-slate-500 mt-2">
+                            🔒 = Booked slots (unavailable) | ✅ = Available slots
+                          </p>
+                        )}
                       </div>
 
                       <div>

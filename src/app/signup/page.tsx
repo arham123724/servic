@@ -4,8 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Wrench, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
-
+import { useAuth } from "@/context/AuthContext";import { validateEmail, getEmailError } from "@/lib/validation";
 export default function SignupPage() {
   const router = useRouter();
   const { signup } = useAuth();
@@ -34,6 +33,12 @@ export default function SignupPage() {
     // Validation
     if (!formData.name || !formData.email || !formData.password) {
       setError("Please fill in all fields.");
+      setLoading(false);
+      return;
+    }
+
+    if (!validateEmail(formData.email)) {
+      setError(getEmailError(formData.email));
       setLoading(false);
       return;
     }

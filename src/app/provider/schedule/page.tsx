@@ -26,6 +26,9 @@ export default function ProviderSchedulePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState<"all" | "pending" | "confirmed" | "completed" | "cancelled">("all");
+  const [updatingBookingId, setUpdatingBookingId] = useState<string | null>(null);
+
+  const newBookingsCount = bookings.filter((b) => b.isNew).length;
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -122,6 +125,73 @@ export default function ProviderSchedulePage() {
     }
   };
 
+  const handleApproveBooking = async (bookingId: string) => {
+    setUpdatingBookingId(bookingId);
+    try {
+      const res = await fetch(`/api/bookings/${bookingId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "confirmed", isNew: false }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        // Update local state
+        setBookings((prev) =>
+          prev.map((b) =>
+            b._id === bookingId ? { ...b, status: "confirmed", isNew: false } : b
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error approving booking:", error);
+    } finally {
+      setUpdatingBookingId(null);
+    }
+  };
+
+  const handleRejectBooking = async (bookingId: string) => {
+    setUpdatingBookingId(bookingId);
+    try {
+      const res = await fetch(`/api/bookings/${bookingId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "cancelled", isNew: false }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        // Update local state
+        setBookings((prev) =>
+          prev.map((b) =>
+            b._id === bookingId ? { ...b, status: "cancelled", isNew: false } : b
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error rejecting booking:", error);
+    } finally {
+      setUpdatingBookingId(null);
+    }
+  };
+
+  const markAsRead = async (bookingId: string) => {
+    try {
+      await fetch(`/api/bookings/${bookingId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isNew: false }),
+      });
+
+      // Update local state
+      setBookings((prev) =>
+        prev.map((b) => (b._id === bookingId ? { ...b, isNew: false } : b))
+      );
+    } catch (error) {
+      console.error("Error marking as read:", error);
+    }
+  };
+
   const filteredBookings = bookings.filter((booking) =>
     filter === "all" ? true : booking.status === filter
   );
@@ -164,9 +234,16 @@ export default function ProviderSchedulePage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            My Schedule
-          </h1>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-3xl font-bold text-slate-800">
+              My Schedule
+            </h1>
+            {newBookingsCount > 0 && (
+              <span className="bg-red-500 text-white text-sm font-bold px-3 py-1 rounded-full animate-pulse">
+                {newBookingsCount} New
+              </span>
+            )}
+          </div>
           <p className="text-slate-600">
             View and manage your appointments
           </p>
@@ -218,11 +295,12 @@ export default function ProviderSchedulePage() {
                   key={booking._id}
                   className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border-l-4 ${
                     isProviderBooking ? "border-l-green-500" : "border-l-blue-500"
-                  }`}
+                  } ${booking.isNew ? "ring-2 ring-red-300" : ""}`}
+                  onClick={() => booking.isNew && markAsRead(booking._id)}
                 >
                   <div className="p-6">
-                    {/* Booking Type Badge */}
-                    <div className="mb-3">
+                    {/* Booking Type Badge and New Badge */}
+                    <div className="mb-3 flex items-center gap-2 flex-wrap">
                       {isProviderBooking ? (
                         <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
                           📥 Booking from Client
@@ -230,6 +308,11 @@ export default function ProviderSchedulePage() {
                       ) : (
                         <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
                           📤 Your Booking
+                        </span>
+                      )}
+                      {booking.isNew && (
+                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse">
+                          ✨ NEW
                         </span>
                       )}
                     </div>
@@ -291,7 +374,7 @@ export default function ProviderSchedulePage() {
                   </div>
 
                   {booking.notes && (
-                    <div className="bg-slate-50 rounded-lg p-4">
+                    <div className="bg-slate-50 rounded-lg p-4 mb-4">
                       <div className="flex items-start gap-2">
                         <FileText className="w-4 h-4 text-slate-400 mt-0.5" />
                         <div>
@@ -303,6 +386,28 @@ export default function ProviderSchedulePage() {
                           </p>
                         </div>
                       </div>
+                    </div>
+                  )}
+
+                  {/* Approve/Reject buttons for provider bookings that are pending */}
+                  {isProviderBooking && booking.status === "pending" && (
+                    <div className="flex gap-3 pt-4 border-t">
+                      <button
+                        onClick={() => handleApproveBooking(booking._id)}
+                        disabled={updatingBookingId === booking._id}
+                        className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                      >
+                        <CheckCircle className="w-4 h-4" />
+                        {updatingBookingId === booking._id ? "Approving..." : "Approve"}
+                      </button>
+                      <button
+                        onClick={() => handleRejectBooking(booking._id)}
+                        disabled={updatingBookingId === booking._id}
+                        className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                      >
+                        <XCircle className="w-4 h-4" />
+                        {updatingBookingId === booking._id ? "Rejecting..." : "Reject"}
+                      </button>
                     </div>
                   )}
                 </div>
