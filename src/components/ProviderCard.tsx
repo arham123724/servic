@@ -17,6 +17,38 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function ProviderCard({ provider }: ProviderCardProps) {
+  // Helper function to format time (24h to 12h)
+  const formatTime = (time: string): string => {
+    if (!time) return "";
+    const [hours, minutes] = time.split(":");
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    const formattedHour = hour % 12 || 12;
+    return `${formattedHour}:${minutes} ${ampm}`;
+  };
+
+  // Get working hours with fallback
+  const getWorkingHours = (): string => {
+    if (provider.workingHours?.start && provider.workingHours?.end) {
+      return `${formatTime(provider.workingHours.start)} - ${formatTime(provider.workingHours.end)}`;
+    }
+    // Default fallback
+    return "09:00 AM - 06:00 PM";
+  };
+
+  // Get working days label
+  const getWorkingDays = (): string => {
+    if (provider.workingHours?.days && provider.workingHours.days.length > 0) {
+      const days = provider.workingHours.days;
+      if (days.length === 7) return "Daily";
+      if (days.length === 6 && !days.includes("Sunday")) return "Mon-Sat";
+      if (days.length === 5 && !days.includes("Saturday") && !days.includes("Sunday")) return "Mon-Fri";
+      return days.map(d => d.slice(0, 3)).join(", ");
+    }
+    // Default fallback
+    return "Mon-Sat";
+  };
+
   const handleCall = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -67,9 +99,8 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
               )}
             </div>
             <span
-              className={`px-3 py-1 rounded-full text-xs font-medium ${
-                categoryColors[provider.category] || "bg-slate-100 text-slate-800"
-              }`}
+              className={`px-3 py-1 rounded-full text-xs font-medium ${categoryColors[provider.category] || "bg-slate-100 text-slate-800"
+                }`}
             >
               {provider.category}
             </span>
@@ -95,6 +126,15 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
                 <span className="font-semibold">{provider.experience} yrs exp</span>
               </div>
             )}
+          </div>
+
+          {/* Working Hours */}
+          <div className="flex items-center gap-2 text-sm text-slate-600 mb-3 bg-slate-50 px-3 py-2 rounded-lg">
+            <Clock className="w-4 h-4 text-[#1e3a8a] flex-shrink-0" />
+            <span className="font-medium">{getWorkingHours()}</span>
+            <span className="text-xs text-slate-400 bg-slate-200 px-2 py-0.5 rounded-full">
+              {getWorkingDays()}
+            </span>
           </div>
 
           {/* Bio */}
