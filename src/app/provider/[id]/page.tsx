@@ -649,7 +649,7 @@ export default function ProviderDetailPage() {
                           onChange={(e) =>
                             setBookingData({ ...bookingData, date: e.target.value })
                           }
-                          className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+                          className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition-colors"
                         />
                       </div>
 
@@ -663,7 +663,7 @@ export default function ProviderDetailPage() {
                           onChange={(e) =>
                             setBookingData({ ...bookingData, timeSlot: e.target.value })
                           }
-                          className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+                          className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 cursor-pointer transition-colors"
                         >
                           <option value="" className="text-slate-500">Choose a time</option>
                           {(() => {
@@ -727,7 +727,7 @@ export default function ProviderDetailPage() {
                           onChange={(e) =>
                             setBookingData({ ...bookingData, clientPhone: e.target.value })
                           }
-                          className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+                          className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition-colors"
                         />
                       </div>
 
@@ -742,7 +742,7 @@ export default function ProviderDetailPage() {
                           onChange={(e) =>
                             setBookingData({ ...bookingData, notes: e.target.value })
                           }
-                          className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 resize-none"
+                          className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 resize-none transition-colors"
                         />
                       </div>
 
