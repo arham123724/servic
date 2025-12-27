@@ -401,31 +401,47 @@ export default function ProviderDetailPage() {
                     </p>
                   </div>
                 )}
+
+                {/* Fallback Working Hours when not defined */}
+                {!provider.workingHours && (
+                  <div className="bg-slate-50 rounded-xl p-4 text-center col-span-2 border border-slate-200">
+                    <Clock className="w-5 h-5 text-slate-700 mx-auto mb-2" />
+                    <p className="text-xs text-slate-500 font-medium mb-1">Working Hours</p>
+                    <p className="font-semibold text-slate-900 text-sm">
+                      09:00 AM - 06:00 PM
+                    </p>
+                  </div>
+                )}
               </div>
 
-              {/* Working Days */}
-              {provider.workingHours?.days && provider.workingHours.days.length > 0 && (
-                <div>
-                  <h3 className="text-base font-semibold text-slate-900 mb-3">
-                    Available Days
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(
-                      (day) => (
+              {/* Working Days - Always show with fallback */}
+              <div>
+                <h3 className="text-base font-semibold text-slate-900 mb-3">
+                  Available Days
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(
+                    (day) => {
+                      // Use provider's days if available, otherwise default to Mon-Sat
+                      const availableDays = provider.workingHours?.days && provider.workingHours.days.length > 0
+                        ? provider.workingHours.days
+                        : ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+                      return (
                         <span
                           key={day}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${provider.workingHours?.days?.includes(day)
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${availableDays.includes(day)
                             ? "bg-slate-900 text-white"
                             : "bg-slate-100 text-slate-400"
                             }`}
                         >
                           {day.slice(0, 3)}
                         </span>
-                      )
-                    )}
-                  </div>
+                      );
+                    }
+                  )}
                 </div>
-              )}
+              </div>
 
               {/* Bio */}
               {provider.bio && (
