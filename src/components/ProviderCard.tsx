@@ -85,10 +85,10 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
   };
 
   return (
-    <Link href={`/provider/${provider._id}`} className="block">
-      <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 cursor-pointer hover:border-slate-300">
-        {/* Card Header */}
-        <div className="p-5">
+    <Link href={`/provider/${provider._id}`} className="block h-full">
+      <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 cursor-pointer hover:border-slate-300 h-full flex flex-col">
+        {/* Card Content */}
+        <div className="p-5 flex-grow">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-semibold text-slate-800">
@@ -162,12 +162,10 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
             </span>
           </div>
 
-          {/* Bio */}
-          {provider.bio && (
-            <p className="text-slate-600 text-sm line-clamp-2 mb-4">
-              {provider.bio}
-            </p>
-          )}
+          {/* Bio - Always visible with fallback */}
+          <p className="text-slate-600 text-sm line-clamp-2">
+            {provider.bio || `Professional ${provider.category.toLowerCase()} providing quality services in ${provider.location}.`}
+          </p>
         </div>
 
         {/* Action Buttons */}
