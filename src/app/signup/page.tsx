@@ -179,7 +179,7 @@ export default function SignupPage() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="Re-enter your password"
-                  className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 rounded-lg border-2 border-slate-200 bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] transition-all"
                   required
                 />
               </div>
@@ -188,7 +188,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-[#2563EB] hover:bg-[#1d4ed8] disabled:bg-slate-400 text-white font-semibold rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3.5 bg-[#f59e0b] hover:bg-[#d97706] disabled:bg-slate-400 text-white font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 {loading ? (
                   <>
@@ -205,7 +205,7 @@ export default function SignupPage() {
                 Already have an account?{" "}
                 <Link
                   href="/login"
-                  className="text-[#2563EB] hover:underline font-medium"
+                  className="text-[#1e3a8a] hover:text-[#1e40af] hover:underline font-bold"
                 >
                   Log in
                 </Link>

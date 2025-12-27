@@ -239,7 +239,7 @@ export default function ProviderSchedulePage() {
               My Schedule
             </h1>
             {newBookingsCount > 0 && (
-              <span className="bg-red-500 text-white text-sm font-bold px-3 py-1 rounded-full animate-pulse">
+              <span className="bg-[#f59e0b] text-white text-sm font-bold px-3 py-1 rounded-full animate-pulse shadow-md">
                 {newBookingsCount} New
               </span>
             )}
@@ -250,16 +250,16 @@ export default function ProviderSchedulePage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
+        <div className="bg-white rounded-xl shadow-sm p-4 mb-6 border border-slate-200">
           <div className="flex flex-wrap gap-2">
             {["all", "pending", "confirmed", "completed", "cancelled"].map((status) => (
               <button
                 key={status}
                 onClick={() => setFilter(status as typeof filter)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                   filter === status
-                    ? "bg-[#2563EB] text-white"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    ? "bg-[#1e3a8a] text-white shadow-md"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800"
                 }`}
               >
                 {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -357,7 +357,7 @@ export default function ProviderSchedulePage() {
                       <Phone className="w-4 h-4 text-slate-400" />
                       <a
                         href={`tel:${booking.clientPhone}`}
-                        className="text-sm hover:text-[#2563EB]"
+                        className="text-sm hover:text-[#1e3a8a] font-medium"
                       >
                         {booking.clientPhone}
                       </a>
@@ -366,7 +366,7 @@ export default function ProviderSchedulePage() {
                       <Mail className="w-4 h-4 text-slate-400" />
                       <a
                         href={`mailto:${booking.clientEmail}`}
-                        className="text-sm hover:text-[#2563EB]"
+                        className="text-sm hover:text-[#1e3a8a] font-medium"
                       >
                         {booking.clientEmail}
                       </a>
@@ -395,7 +395,7 @@ export default function ProviderSchedulePage() {
                       <button
                         onClick={() => handleApproveBooking(booking._id)}
                         disabled={updatingBookingId === booking._id}
-                        className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                        className="flex-1 bg-[#10b981] hover:bg-[#059669] disabled:bg-slate-300 text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
                       >
                         <CheckCircle className="w-4 h-4" />
                         {updatingBookingId === booking._id ? "Approving..." : "Approve"}
@@ -403,7 +403,7 @@ export default function ProviderSchedulePage() {
                       <button
                         onClick={() => handleRejectBooking(booking._id)}
                         disabled={updatingBookingId === booking._id}
-                        className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                        className="flex-1 bg-[#ef4444] hover:bg-[#dc2626] disabled:bg-slate-300 text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
                       >
                         <XCircle className="w-4 h-4" />
                         {updatingBookingId === booking._id ? "Rejecting..." : "Reject"}

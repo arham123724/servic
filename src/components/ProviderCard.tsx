@@ -54,7 +54,7 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
 
   return (
     <Link href={`/provider/${provider._id}`} className="block">
-      <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-slate-100 cursor-pointer">
+      <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 cursor-pointer hover:border-slate-300">
         {/* Card Header */}
         <div className="p-5">
           <div className="flex items-start justify-between mb-3">
@@ -63,7 +63,7 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
                 {provider.name}
               </h3>
               {provider.isVerified && (
-                <BadgeCheck className="w-5 h-5 text-blue-600" />
+                <BadgeCheck className="w-5 h-5 text-[#f59e0b]" />
               )}
             </div>
             <span
@@ -85,14 +85,14 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
           <div className="flex items-center gap-4 text-sm text-slate-600 mb-3">
             {provider.hourlyRate && (
               <div className="flex items-center gap-1">
-                <DollarSign className="w-4 h-4 text-[#2563EB]" />
-                <span>PKR {provider.hourlyRate}/hr</span>
+                <DollarSign className="w-4 h-4 text-[#1e3a8a]" />
+                <span className="font-semibold">PKR {provider.hourlyRate}/hr</span>
               </div>
             )}
             {provider.experience && (
               <div className="flex items-center gap-1">
-                <Clock className="w-4 h-4 text-[#2563EB]" />
-                <span>{provider.experience} yrs exp</span>
+                <Clock className="w-4 h-4 text-[#1e3a8a]" />
+                <span className="font-semibold">{provider.experience} yrs exp</span>
               </div>
             )}
           </div>
@@ -109,14 +109,14 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
         <div className="flex border-t border-slate-100">
           <button
             onClick={handleCall}
-            className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-medium transition-colors duration-200 cursor-pointer"
+            className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#1e3a8a] hover:bg-[#1e40af] text-white font-semibold transition-all duration-200 cursor-pointer hover:scale-105 transform"
           >
             <Phone className="w-5 h-5" />
             <span>Call</span>
           </button>
           <button
             onClick={handleWhatsApp}
-            className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#25D366] hover:bg-[#1fb855] text-white font-medium transition-colors duration-200 cursor-pointer"
+            className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#25D366] hover:bg-[#1fb855] text-white font-semibold transition-all duration-200 cursor-pointer hover:scale-105 transform"
           >
             <MessageCircle className="w-5 h-5" />
             <span>WhatsApp</span>

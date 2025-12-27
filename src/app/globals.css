@@ -1,21 +1,76 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Background & Foreground - Clean, professional base */
+  --background: #f8fafc; /* slate-50 - Clean off-white */
+  --foreground: #1e293b; /* slate-800 - Dark slate text for readability */
+  
+  /* Primary Brand - Deep Navy (Professional & Trustworthy) */
+  --primary: #1e3a8a; /* blue-900 - Deep Navy */
+  --primary-hover: #1e40af; /* blue-800 - Slightly lighter for hover */
+  --primary-foreground: #ffffff; /* White text on primary */
+  
+  /* Secondary - Light Slate (Subtle, supporting elements) */
+  --secondary: #64748b; /* slate-500 - Medium slate */
+  --secondary-light: #cbd5e1; /* slate-300 - Light slate for backgrounds */
+  --secondary-foreground: #0f172a; /* slate-900 - Dark text on secondary */
+  
+  /* Accent - Amber/Orange (CTAs, Verified badges, Special offers) */
+  --accent: #f59e0b; /* amber-500 - Vibrant but professional */
+  --accent-hover: #d97706; /* amber-600 - Darker for hover states */
+  --accent-foreground: #ffffff; /* White text on accent */
+  
+  /* Success, Warning, Error (Supporting colors) */
+  --success: #10b981; /* emerald-500 */
+  --warning: #f59e0b; /* amber-500 */
+  --error: #ef4444; /* red-500 */
+  
+  /* Borders & Subtle Elements */
+  --border: #e2e8f0; /* slate-200 */
+  --border-hover: #cbd5e1; /* slate-300 */
+  
+  /* Card & Surface */
+  --card: #ffffff;
+  --card-foreground: #1e293b;
 }
 
 @theme inline {
+  /* Map CSS variables to Tailwind utilities */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-light: var(--secondary-light);
+  --color-secondary-foreground: var(--secondary-foreground);
+  
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+  
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  
+  --color-border: var(--border);
+  --color-border-hover: var(--border-hover);
+  
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f172a; /* slate-900 */
+    --foreground: #f1f5f9; /* slate-100 */
+    --card: #1e293b; /* slate-800 */
+    --border: #334155; /* slate-700 */
   }
 }
 

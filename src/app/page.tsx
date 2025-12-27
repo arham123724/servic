@@ -66,13 +66,13 @@ export default function Home() {
       {/* Header */}
       <Header />
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-[#2563EB] to-[#1e40af] text-white py-16 md:py-24">
+      {/* Hero Section - Modern Clean Design */}
+      <section className="bg-white border-b border-slate-200 py-16 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl md:text-5xl font-bold mb-4">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-slate-900">
             Find Trusted Local Services
           </h1>
-          <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto mb-8">
+          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-12">
             Connect with verified electricians, plumbers, tutors, carpenters,
             and mechanics in your city. Quick, reliable, and hassle-free.
           </p>

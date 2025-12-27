@@ -251,15 +251,15 @@ export default function ProviderDetailPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-50">
+      <header className="bg-white shadow-sm sticky top-0 z-50 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-[#2563EB] rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#1e3a8a] rounded-lg flex items-center justify-center shadow-md">
                 <Briefcase className="w-6 h-6 text-white" />
               </div>
               <span className="text-xl font-bold text-slate-800">
-                Local<span className="text-[#2563EB]">Service</span>
+                Local<span className="text-[#1e3a8a]">Service</span>
               </span>
             </Link>
           </div>
@@ -272,56 +272,58 @@ export default function ProviderDetailPage() {
           {/* Back Link */}
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-slate-600 hover:text-[#2563EB] mb-6 transition-colors"
+            className="inline-flex items-center gap-2 text-slate-600 hover:text-[#1e3a8a] mb-6 transition-colors font-medium"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Search
           </Link>
 
-          {/* Provider Card */}
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-            {/* Header Section */}
-            <div className="bg-gradient-to-r from-[#2563EB] to-[#1e40af] px-6 py-8 text-white">
+          {/* Provider Card - Modern Clean Design */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            {/* Header Section - Clean White Background */}
+            <div className="px-6 py-8 border-b border-slate-200">
               <div className="flex items-start gap-6">
-                {/* Avatar */}
-                <div className="w-24 h-24 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <span className="text-4xl font-bold">
+                {/* Large Avatar */}
+                <div className="w-28 h-28 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center flex-shrink-0 border-2 border-slate-300">
+                  <span className="text-5xl font-bold text-slate-700">
                     {provider.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
 
                 <div className="flex-1">
-                  <div className="flex items-center gap-3">
-                    <h1 className="text-2xl md:text-3xl font-bold">
+                  {/* Name and Verified Badge */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
                       {provider.name}
                     </h1>
                     {provider.isVerified && (
-                      <div className="flex items-center gap-1 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                        <CheckCircle className="w-3 h-3" />
+                      <div className="flex items-center gap-1 bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-semibold border border-emerald-200">
+                        <CheckCircle className="w-3.5 h-3.5" />
                         Verified
                       </div>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-4 mt-2 text-blue-100">
-                    <span className="flex items-center gap-1">
-                      <Briefcase className="w-4 h-4" />
+                  {/* Category and Location Pills */}
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                    <span className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 px-3 py-1.5 rounded-full text-sm font-medium">
+                      <Briefcase className="w-3.5 h-3.5" />
                       {provider.category}
                     </span>
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4" />
+                    <span className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 px-3 py-1.5 rounded-full text-sm font-medium">
+                      <MapPin className="w-3.5 h-3.5" />
                       {provider.location}
                     </span>
                   </div>
 
                   {/* Rating */}
                   {provider.rating && provider.rating > 0 && (
-                    <div className="flex items-center gap-2 mt-3">
+                    <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1">
-                        <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                        <span className="font-semibold">{provider.rating.toFixed(1)}</span>
+                        <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
+                        <span className="font-semibold text-slate-900">{provider.rating.toFixed(1)}</span>
                       </div>
-                      <span className="text-blue-100">
+                      <span className="text-slate-500 text-sm">
                         ({provider.totalReviews || 0} reviews)
                       </span>
                     </div>
@@ -332,22 +334,22 @@ export default function ProviderDetailPage() {
 
             {/* Content Section */}
             <div className="p-6 space-y-6">
-              {/* Quick Info */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {/* Quick Info Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {provider.hourlyRate && (
-                  <div className="bg-slate-50 rounded-lg p-4 text-center">
-                    <DollarSign className="w-6 h-6 text-[#2563EB] mx-auto mb-2" />
-                    <p className="text-sm text-slate-500">Hourly Rate</p>
-                    <p className="font-semibold text-slate-800">
+                  <div className="bg-slate-50 rounded-xl p-4 text-center border border-slate-200">
+                    <DollarSign className="w-5 h-5 text-slate-700 mx-auto mb-2" />
+                    <p className="text-xs text-slate-500 font-medium mb-1">Hourly Rate</p>
+                    <p className="font-bold text-slate-800">
                       PKR {provider.hourlyRate}
                     </p>
                   </div>
                 )}
 
                 {provider.experience && (
-                  <div className="bg-slate-50 rounded-lg p-4 text-center">
-                    <Award className="w-6 h-6 text-[#2563EB] mx-auto mb-2" />
-                    <p className="text-sm text-slate-500">Experience</p>
+                  <div className="bg-slate-50 rounded-lg p-4 text-center border border-slate-200">
+                    <Award className="w-6 h-6 text-[#1e3a8a] mx-auto mb-2" />
+                    <p className="text-sm text-slate-500 font-medium">Experience</p>
                     <p className="font-semibold text-slate-800">
                       {provider.experience} years
                     </p>
@@ -355,10 +357,10 @@ export default function ProviderDetailPage() {
                 )}
 
                 {provider.workingHours && (
-                  <div className="bg-slate-50 rounded-lg p-4 text-center col-span-2">
-                    <Clock className="w-6 h-6 text-[#2563EB] mx-auto mb-2" />
-                    <p className="text-sm text-slate-500">Working Hours</p>
-                    <p className="font-semibold text-slate-800">
+                  <div className="bg-slate-50 rounded-xl p-4 text-center col-span-2 border border-slate-200">
+                    <Clock className="w-5 h-5 text-slate-700 mx-auto mb-2" />
+                    <p className="text-xs text-slate-500 font-medium mb-1">Working Hours</p>
+                    <p className="font-semibold text-slate-900 text-sm">
                       {formatTime(provider.workingHours.start)} - {formatTime(provider.workingHours.end)}
                     </p>
                   </div>
@@ -368,17 +370,17 @@ export default function ProviderDetailPage() {
               {/* Working Days */}
               {provider.workingHours?.days && provider.workingHours.days.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-800 mb-3">
-                    Working Days
+                  <h3 className="text-base font-semibold text-slate-900 mb-3">
+                    Available Days
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(
                       (day) => (
                         <span
                           key={day}
-                          className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                             provider.workingHours?.days?.includes(day)
-                              ? "bg-[#2563EB] text-white"
+                              ? "bg-slate-900 text-white"
                               : "bg-slate-100 text-slate-400"
                           }`}
                         >
@@ -393,10 +395,10 @@ export default function ProviderDetailPage() {
               {/* Bio */}
               {provider.bio && (
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-800 mb-3">
+                  <h3 className="text-base font-semibold text-slate-900 mb-3">
                     About
                   </h3>
-                  <p className="text-slate-600 leading-relaxed">{provider.bio}</p>
+                  <p className="text-slate-700 leading-relaxed">{provider.bio}</p>
                 </div>
               )}
 
@@ -410,7 +412,7 @@ export default function ProviderDetailPage() {
                     {provider.services.map((service) => (
                       <span
                         key={service}
-                        className="px-3 py-2 bg-blue-50 text-[#2563EB] rounded-lg text-sm font-medium"
+                        className="px-3 py-2 bg-slate-100 text-[#1e3a8a] rounded-lg text-sm font-semibold border border-slate-200"
                       >
                         {service}
                       </span>
@@ -444,30 +446,32 @@ export default function ProviderDetailPage() {
                 </div>
               </div>
 
-              {/* CTA Buttons */}
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+              {/* CTA Buttons - Modern Layout */}
+              <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-200">
+                {/* Call - Outline Style */}
                 <button
                   onClick={handleCall}
-                  className="flex items-center justify-center gap-2 px-6 py-4 bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-semibold rounded-lg transition-colors cursor-pointer"
+                  className="flex items-center justify-center gap-2 px-6 py-3.5 bg-white border-2 border-slate-300 hover:border-slate-400 text-slate-900 font-semibold rounded-lg transition-all hover:bg-slate-50 cursor-pointer"
                 >
                   <Phone className="w-5 h-5" />
                   Call Now
                 </button>
+                {/* WhatsApp - Lighter Green */}
                 <button
                   onClick={handleWhatsApp}
-                  className="flex items-center justify-center gap-2 px-6 py-4 bg-[#22C55E] hover:bg-[#16a34a] text-white font-semibold rounded-lg transition-colors cursor-pointer"
+                  className="flex items-center justify-center gap-2 px-6 py-3.5 bg-[#25D366] hover:bg-[#22c55e] text-white font-semibold rounded-lg transition-all cursor-pointer"
                 >
                   <MessageCircle className="w-5 h-5" />
                   WhatsApp
                 </button>
               </div>
 
-              {/* Booking Button */}
+              {/* Book Appointment - Hero Button (Full Width, Deep Navy) */}
               {user && (
-                <div className="pt-4">
+                <div className="pt-2">
                   <button
                     onClick={() => setShowBookingForm(!showBookingForm)}
-                    className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg transition-all cursor-pointer"
                   >
                     <Calendar className="w-5 h-5" />
                     {showBookingForm ? "Cancel Booking" : "Book Appointment"}
@@ -477,7 +481,7 @@ export default function ProviderDetailPage() {
 
               {/* Booking Form */}
               {showBookingForm && user && (
-                <div className="border-t-2 border-purple-200 pt-6 bg-gradient-to-br from-purple-50 to-blue-50 p-6 rounded-lg">
+                <div className="border-t-2 border-slate-200 pt-6 bg-gradient-to-br from-slate-50 to-blue-50 p-6 rounded-xl shadow-inner">
                   <h3 className="text-2xl font-bold text-slate-900 mb-2">
                     Schedule an Appointment
                   </h3>
@@ -524,7 +528,7 @@ export default function ProviderDetailPage() {
                           onChange={(e) =>
                             setBookingData({ ...bookingData, timeSlot: e.target.value })
                           }
-                          className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 shadow-sm"
+                          className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] shadow-sm"
                         >
                           <option value="" className="text-slate-500">Choose a time</option>
                           {generateTimeSlots().map((slot) => {
@@ -560,7 +564,7 @@ export default function ProviderDetailPage() {
                           onChange={(e) =>
                             setBookingData({ ...bookingData, clientPhone: e.target.value })
                           }
-                          className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-900 font-medium placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 shadow-sm"
+                          className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-900 font-medium placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] shadow-sm"
                         />
                       </div>
 
@@ -575,14 +579,14 @@ export default function ProviderDetailPage() {
                           onChange={(e) =>
                             setBookingData({ ...bookingData, notes: e.target.value })
                           }
-                          className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-900 font-medium placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 resize-none shadow-sm"
+                          className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-900 font-medium placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] resize-none shadow-sm"
                         />
                       </div>
 
                       <button
                         type="submit"
                         disabled={bookingLoading}
-                        className="w-full px-6 py-4 bg-purple-600 hover:bg-purple-700 disabled:bg-slate-400 disabled:cursor-not-allowed text-white font-bold text-lg rounded-lg transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                        className="w-full px-6 py-4 bg-[#f59e0b] hover:bg-[#d97706] disabled:bg-slate-400 disabled:cursor-not-allowed text-white font-bold text-lg rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
                       >
                         {bookingLoading ? "Booking..." : "✓ Confirm Booking"}
                       </button>
@@ -593,9 +597,9 @@ export default function ProviderDetailPage() {
 
               {!user && (
                 <div className="border-t-2 border-slate-200 pt-6">
-                  <div className="bg-gradient-to-br from-slate-50 to-blue-50 p-6 rounded-lg text-center border-2 border-slate-200">
+                  <div className="bg-gradient-to-br from-slate-50 to-blue-50 p-6 rounded-xl text-center border-2 border-slate-200 shadow-inner">
                     <p className="text-slate-800 font-medium text-lg">
-                      <Link href="/login" className="text-purple-600 hover:text-purple-700 font-bold underline">
+                      <Link href="/login" className="text-[#f59e0b] hover:text-[#d97706] font-bold underline">
                         Login
                       </Link>
                       {" "}or{" "}
