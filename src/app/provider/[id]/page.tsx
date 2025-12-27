@@ -580,45 +580,46 @@ export default function ProviderDetailPage() {
                 </button>
               </div>
 
-              {/* Book Appointment - Hero Button (Full Width, Deep Navy) */}
-              {user && (
+              {/* Book Appointment Button */}
+              {user && !showBookingForm && (
                 <div className="pt-2">
                   <button
-                    onClick={() => setShowBookingForm(!showBookingForm)}
+                    onClick={() => setShowBookingForm(true)}
                     className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg transition-all cursor-pointer"
                   >
                     <Calendar className="w-5 h-5" />
-                    {showBookingForm ? "Cancel Booking" : "Book Appointment"}
+                    Book Appointment
                   </button>
                 </div>
               )}
 
-              {/* Booking Form */}
+              {/* Booking Form - Clean Modal Layout */}
               {showBookingForm && user && (
-                <div className="border-t-2 border-slate-200 pt-6 bg-gradient-to-br from-slate-50 to-blue-50 p-6 rounded-xl shadow-inner">
-                  <h3 className="text-2xl font-bold text-slate-900 mb-2">
+                <div className="border-t border-slate-200 pt-6 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                  {/* Clean Header */}
+                  <h3 className="text-xl font-bold text-slate-900 mb-1">
                     Schedule an Appointment
                   </h3>
-                  <p className="text-slate-600 mb-6">
+                  <p className="text-slate-500 text-sm mb-6">
                     Book a time slot that works best for you
                   </p>
 
                   {bookingSuccess ? (
-                    <div className="bg-green-100 border-2 border-green-300 text-green-800 px-6 py-4 rounded-lg mb-4 shadow-sm">
-                      <p className="font-bold text-lg">Booking successful! 🎉</p>
-                      <p className="text-sm mt-1">The provider will contact you shortly to confirm.</p>
+                    <div className="bg-green-50 border border-green-200 text-green-800 px-5 py-4 rounded-lg mb-4">
+                      <p className="font-semibold">Booking successful! 🎉</p>
+                      <p className="text-sm mt-1 text-green-700">The provider will contact you shortly to confirm.</p>
                     </div>
                   ) : (
                     <form onSubmit={handleBookingSubmit} className="space-y-5">
                       {bookingError && (
-                        <div className="bg-red-100 border-2 border-red-300 text-red-800 px-6 py-4 rounded-lg shadow-sm">
-                          <p className="font-semibold">{bookingError}</p>
+                        <div className="bg-red-50 border border-red-200 text-red-700 px-5 py-3 rounded-lg">
+                          <p className="font-medium text-sm">{bookingError}</p>
                         </div>
                       )}
 
                       <div>
-                        <label className="block text-sm font-bold text-slate-800 mb-2">
-                          📅 Select Date
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">
+                          Select Date
                         </label>
                         <input
                           type="date"
@@ -628,13 +629,13 @@ export default function ProviderDetailPage() {
                           onChange={(e) =>
                             setBookingData({ ...bookingData, date: e.target.value })
                           }
-                          className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 shadow-sm"
+                          className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-bold text-slate-800 mb-2">
-                          🕐 Select Time Slot
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">
+                          Select Time Slot
                         </label>
                         <select
                           required
@@ -642,7 +643,7 @@ export default function ProviderDetailPage() {
                           onChange={(e) =>
                             setBookingData({ ...bookingData, timeSlot: e.target.value })
                           }
-                          className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] shadow-sm"
+                          className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
                         >
                           <option value="" className="text-slate-500">Choose a time</option>
                           {(() => {
@@ -661,7 +662,7 @@ export default function ProviderDetailPage() {
                                   disabled={booked}
                                   className={booked ? "text-slate-400 bg-slate-100" : "text-slate-900"}
                                 >
-                                  {formatTime(slot)} {booked ? "🔒 Booked" : "✅ Available"}
+                                  {formatTime(slot)} {booked ? "• Booked" : ""}
                                 </option>
                               );
                             });
@@ -669,19 +670,14 @@ export default function ProviderDetailPage() {
                         </select>
                         {bookingData.date && getAvailableSlots(bookingData.date).length === 0 && (
                           <p className="text-xs text-amber-600 mt-2 font-medium">
-                            ⚠️ No available slots for today. Please select a future date.
-                          </p>
-                        )}
-                        {bookingData.date && getAvailableSlots(bookingData.date).length > 0 && (
-                          <p className="text-xs text-slate-500 mt-2">
-                            🔒 = Booked slots (unavailable) | ✅ = Available slots
+                            No available slots for today. Please select a future date.
                           </p>
                         )}
                       </div>
 
                       <div>
-                        <label className="block text-sm font-bold text-slate-800 mb-2">
-                          📱 Your Phone Number
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">
+                          Your Phone Number
                         </label>
                         <input
                           type="tel"
@@ -691,13 +687,13 @@ export default function ProviderDetailPage() {
                           onChange={(e) =>
                             setBookingData({ ...bookingData, clientPhone: e.target.value })
                           }
-                          className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-900 font-medium placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] shadow-sm"
+                          className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-bold text-slate-800 mb-2">
-                          📝 Additional Notes (Optional)
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">
+                          Additional Notes <span className="text-slate-400 font-normal">(Optional)</span>
                         </label>
                         <textarea
                           rows={3}
@@ -706,17 +702,33 @@ export default function ProviderDetailPage() {
                           onChange={(e) =>
                             setBookingData({ ...bookingData, notes: e.target.value })
                           }
-                          className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-900 font-medium placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] resize-none shadow-sm"
+                          className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 resize-none"
                         />
                       </div>
 
-                      <button
-                        type="submit"
-                        disabled={bookingLoading}
-                        className="w-full px-6 py-4 bg-[#f59e0b] hover:bg-[#d97706] disabled:bg-slate-400 disabled:cursor-not-allowed text-white font-bold text-lg rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
-                      >
-                        {bookingLoading ? "Booking..." : "✓ Confirm Booking"}
-                      </button>
+                      {/* Footer Actions - Side by Side */}
+                      <div className="flex gap-3 pt-2">
+                        {/* Cancel - Ghost Button */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowBookingForm(false);
+                            setBookingData({ date: "", timeSlot: "", clientPhone: "", notes: "" });
+                            setBookingError("");
+                          }}
+                          className="flex-1 px-6 py-3 text-slate-600 hover:text-slate-800 hover:bg-slate-100 font-semibold rounded-lg transition-all border border-slate-200"
+                        >
+                          Cancel
+                        </button>
+                        {/* Confirm - Primary Navy Button */}
+                        <button
+                          type="submit"
+                          disabled={bookingLoading}
+                          className="flex-1 px-6 py-3 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all"
+                        >
+                          {bookingLoading ? "Booking..." : "Confirm Booking"}
+                        </button>
+                      </div>
                     </form>
                   )}
                 </div>
@@ -745,3 +757,4 @@ export default function ProviderDetailPage() {
     </div>
   );
 }
+
