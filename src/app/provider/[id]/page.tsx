@@ -10,7 +10,7 @@ import {
   MapPin,
   Star,
   Clock,
-  DollarSign,
+  Wallet,
   Award,
   CheckCircle,
   Briefcase,
@@ -376,27 +376,25 @@ export default function ProviderDetailPage() {
 
             {/* Content Section */}
             <div className="p-6 space-y-6">
-              {/* Quick Info Grid */}
+              {/* Quick Info Grid - Always show all 3 boxes with fallbacks */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {provider.hourlyRate && (
-                  <div className="bg-slate-50 rounded-xl p-4 text-center border border-slate-200">
-                    <DollarSign className="w-5 h-5 text-slate-700 mx-auto mb-2" />
-                    <p className="text-xs text-slate-500 font-medium mb-1">Hourly Rate</p>
-                    <p className="font-bold text-slate-800">
-                      PKR {provider.hourlyRate}
-                    </p>
-                  </div>
-                )}
+                {/* Rate Box - Always visible */}
+                <div className="bg-slate-50 rounded-xl p-4 text-center border border-slate-200">
+                  <Wallet className="w-5 h-5 text-slate-700 mx-auto mb-2" />
+                  <p className="text-xs text-slate-500 font-medium mb-1">Rate</p>
+                  <p className="font-bold text-slate-800">
+                    {provider.hourlyRate ? `PKR ${provider.hourlyRate}` : "PKR 500 (starting)"}
+                  </p>
+                </div>
 
-                {provider.experience && (
-                  <div className="bg-slate-50 rounded-lg p-4 text-center border border-slate-200">
-                    <Award className="w-6 h-6 text-[#1e3a8a] mx-auto mb-2" />
-                    <p className="text-sm text-slate-500 font-medium">Experience</p>
-                    <p className="font-semibold text-slate-800">
-                      {provider.experience} years
-                    </p>
-                  </div>
-                )}
+                {/* Experience Box - Always visible */}
+                <div className="bg-slate-50 rounded-xl p-4 text-center border border-slate-200">
+                  <Award className="w-5 h-5 text-slate-700 mx-auto mb-2" />
+                  <p className="text-xs text-slate-500 font-medium mb-1">Experience</p>
+                  <p className="font-bold text-slate-800">
+                    {provider.experience ? `${provider.experience} Years` : "2+ Years"}
+                  </p>
+                </div>
 
                 {/* Working Hours - with proper fallback logic */}
                 <div className="bg-slate-50 rounded-xl p-4 text-center col-span-2 border border-slate-200">
@@ -481,24 +479,39 @@ export default function ProviderDetailPage() {
                   </div>
                 );
               })()}
-              {/* Services */}
-              {provider.services && provider.services.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-800 mb-3">
-                    Services Offered
-                  </h3>
+              {/* Services Offered - Always visible with fallback */}
+              <div>
+                <h3 className="text-base font-semibold text-slate-900 mb-3">
+                  Services Offered
+                </h3>
+                {provider.services && provider.services.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {provider.services.map((service) => (
                       <span
                         key={service}
-                        className="px-3 py-2 bg-slate-100 text-[#1e3a8a] rounded-lg text-sm font-semibold border border-slate-200"
+                        className="px-3 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-semibold border border-slate-200"
                       >
                         {service}
                       </span>
                     ))}
                   </div>
-                </div>
-              )}
+                ) : (
+                  <div className="bg-blue-50 text-blue-800 p-3 rounded-md">
+                    <p className="font-medium">
+                      {(() => {
+                        const categoryServices: Record<string, string> = {
+                          Electrician: "Full home wiring and appliance repair.",
+                          Plumber: "Leak detection and pipe maintenance.",
+                          Carpenter: "Furniture repair and custom woodwork.",
+                          Tutor: "Personalized tutoring and exam preparation.",
+                          Mechanic: "Engine diagnostics and vehicle maintenance.",
+                        };
+                        return categoryServices[provider.category] || "Professional services and consultation.";
+                      })()}
+                    </p>
+                  </div>
+                )}
+              </div>
 
               {/* Contact Info */}
               <div>
@@ -904,8 +917,8 @@ export default function ProviderDetailPage() {
                                 >
                                   <Star
                                     className={`w-8 h-8 cursor-pointer ${star <= reviewRating
-                                        ? "text-yellow-400 fill-yellow-400"
-                                        : "text-slate-300 hover:text-yellow-300"
+                                      ? "text-yellow-400 fill-yellow-400"
+                                      : "text-slate-300 hover:text-yellow-300"
                                       }`}
                                   />
                                 </button>
