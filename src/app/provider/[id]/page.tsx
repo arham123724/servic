@@ -647,13 +647,28 @@ export default function ProviderDetailPage() {
                         >
                           <option value="" className="text-slate-500">Choose a time</option>
                           {(() => {
-                            const slots = getAvailableSlots(bookingData.date);
-                            if (slots.length === 0) {
+                            const allSlots = generateTimeSlots();
+                            const availableSlots = getAvailableSlots(bookingData.date);
+
+                            // If no date selected, show all slots
+                            if (!bookingData.date) {
+                              return allSlots.map((slot) => (
+                                <option key={slot} value={slot}>
+                                  {formatTime(slot)}
+                                </option>
+                              ));
+                            }
+
+                            // Check if there are any available (non-past and non-booked) slots
+                            const hasAvailableSlots = availableSlots.some(slot => !isSlotBooked(slot));
+
+                            if (availableSlots.length === 0) {
                               return (
                                 <option disabled>No slots available for this date</option>
                               );
                             }
-                            return slots.map((slot) => {
+
+                            return availableSlots.map((slot) => {
                               const booked = isSlotBooked(slot);
                               return (
                                 <option
@@ -662,7 +677,7 @@ export default function ProviderDetailPage() {
                                   disabled={booked}
                                   className={booked ? "text-slate-400 bg-slate-100" : "text-slate-900"}
                                 >
-                                  {formatTime(slot)} {booked ? "• Booked" : ""}
+                                  {formatTime(slot)} {booked ? "🔒 Booked" : "✅ Available"}
                                 </option>
                               );
                             });
@@ -671,6 +686,11 @@ export default function ProviderDetailPage() {
                         {bookingData.date && getAvailableSlots(bookingData.date).length === 0 && (
                           <p className="text-xs text-amber-600 mt-2 font-medium">
                             No available slots for today. Please select a future date.
+                          </p>
+                        )}
+                        {bookingData.date && getAvailableSlots(bookingData.date).length > 0 && (
+                          <p className="text-xs text-slate-500 mt-2">
+                            🔒 = Already booked | ✅ = Available for booking
                           </p>
                         )}
                       </div>
