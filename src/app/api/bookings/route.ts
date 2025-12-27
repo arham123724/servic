@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Booking from "@/models/Booking";
 import { getSession } from "@/lib/auth";
+import { validatePhone, getPhoneError } from "@/lib/validation";
 
 // POST /api/bookings - Create a new booking
 export async function POST(request: NextRequest) {
@@ -24,6 +25,14 @@ export async function POST(request: NextRequest) {
     if (!providerId || !date || !timeSlot || !clientPhone) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    // Validate phone number
+    if (!validatePhone(clientPhone)) {
+      return NextResponse.json(
+        { success: false, error: getPhoneError(clientPhone) },
         { status: 400 }
       );
     }

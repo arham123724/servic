@@ -28,7 +28,7 @@ export default function ProviderDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [bookedSlots, setBookedSlots] = useState<Array<{ date: string; timeSlot: string }>>([]);
-  
+
   // Booking form state
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
@@ -79,7 +79,7 @@ export default function ProviderDetailPage() {
 
   const handleCall = async () => {
     if (!provider) return;
-    
+
     // Track lead
     await fetch("/api/leads", {
       method: "POST",
@@ -124,7 +124,7 @@ export default function ProviderDetailPage() {
 
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
       setBookingError("Please login to book this provider");
       return;
@@ -154,7 +154,7 @@ export default function ProviderDetailPage() {
       if (data.success) {
         setBookingSuccess(true);
         setBookingData({ date: "", timeSlot: "", clientPhone: "", notes: "" });
-        
+
         // Refresh booked slots
         const response = await fetch(`/api/bookings/provider/${params.id}`);
         if (response.ok) {
@@ -163,7 +163,7 @@ export default function ProviderDetailPage() {
             setBookedSlots(slotsData.data);
           }
         }
-        
+
         setTimeout(() => {
           setShowBookingForm(false);
           setBookingSuccess(false);
@@ -196,7 +196,7 @@ export default function ProviderDetailPage() {
     // Parse working hours
     const startHour = parseInt(provider.workingHours.start.split(":")[0]);
     const endHour = parseInt(provider.workingHours.end.split(":")[0]);
-    
+
     const slots = [];
     for (let hour = startHour; hour <= endHour; hour++) {
       slots.push(`${hour.toString().padStart(2, "0")}:00`);
@@ -209,7 +209,7 @@ export default function ProviderDetailPage() {
 
   const isSlotBooked = (timeSlot: string) => {
     if (!bookingData.date) return false;
-    
+
     return bookedSlots.some(
       (slot) =>
         new Date(slot.date).toDateString() === new Date(bookingData.date).toDateString() &&
@@ -378,11 +378,10 @@ export default function ProviderDetailPage() {
                       (day) => (
                         <span
                           key={day}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                            provider.workingHours?.days?.includes(day)
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${provider.workingHours?.days?.includes(day)
                               ? "bg-slate-900 text-white"
                               : "bg-slate-100 text-slate-400"
-                          }`}
+                            }`}
                         >
                           {day.slice(0, 3)}
                         </span>
@@ -443,6 +442,54 @@ export default function ProviderDetailPage() {
                       <span>{provider.address}</span>
                     </div>
                   )}
+                </div>
+              </div>
+
+              {/* Today's Availability - Visual Schedule Grid */}
+              <div className="border-t border-slate-200 pt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-[#1e3a8a]" />
+                    Today&apos;s Availability
+                  </h3>
+                  <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
+                    {new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
+                  </span>
+                </div>
+                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                  {generateTimeSlots().map((slot) => {
+                    const todayDateStr = new Date().toISOString().split("T")[0];
+                    const isBooked = bookedSlots.some(
+                      (bookedSlot) =>
+                        new Date(bookedSlot.date).toDateString() === new Date(todayDateStr).toDateString() &&
+                        bookedSlot.timeSlot === slot
+                    );
+                    return (
+                      <div
+                        key={slot}
+                        className={`px-2 py-2 rounded-lg text-center text-xs font-medium transition-all ${isBooked
+                            ? "bg-red-100 text-red-700 border border-red-200"
+                            : "bg-green-100 text-green-700 border border-green-200"
+                          }`}
+                        title={isBooked ? "Booked" : "Available"}
+                      >
+                        <div className="font-semibold">{formatTime(slot).replace(" ", "")}</div>
+                        <div className="text-[10px] mt-0.5 opacity-75">
+                          {isBooked ? "Booked" : "Open"}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
+                  <span className="flex items-center gap-1">
+                    <span className="w-3 h-3 bg-green-100 border border-green-200 rounded"></span>
+                    Available
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="w-3 h-3 bg-red-100 border border-red-200 rounded"></span>
+                    Booked
+                  </span>
                 </div>
               </div>
 
@@ -534,9 +581,9 @@ export default function ProviderDetailPage() {
                           {generateTimeSlots().map((slot) => {
                             const booked = isSlotBooked(slot);
                             return (
-                              <option 
-                                key={slot} 
-                                value={slot} 
+                              <option
+                                key={slot}
+                                value={slot}
                                 disabled={booked}
                                 className={booked ? "text-slate-400 bg-slate-100" : "text-slate-900"}
                               >
