@@ -460,15 +460,15 @@ export default function ProviderDetailPage() {
                 </div>
               </div>
 
-              {/* Bio */}
-              {provider.bio && (
-                <div>
-                  <h3 className="text-base font-semibold text-slate-900 mb-3">
-                    About
-                  </h3>
-                  <p className="text-slate-700 leading-relaxed">{provider.bio}</p>
-                </div>
-              )}
+              {/* About - Always visible with fallback */}
+              <div>
+                <h3 className="text-base font-semibold text-slate-900 mb-3">
+                  About
+                </h3>
+                <p className="text-slate-700 leading-relaxed">
+                  {provider.bio || `Professional ${provider.category.toLowerCase()} providing quality services in ${provider.location}.`}
+                </p>
+              </div>
 
               {/* Skills & Expertise */}
               {(() => {
