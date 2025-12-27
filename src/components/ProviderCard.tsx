@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Phone, MessageCircle, MapPin, BadgeCheck, DollarSign, Clock } from "lucide-react";
+import { Phone, MessageCircle, MapPin, BadgeCheck, Banknote, Clock } from "lucide-react";
 import { Provider } from "@/types";
 
 interface ProviderCardProps {
@@ -112,20 +112,22 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
             <span>{provider.location}</span>
           </div>
 
-          {/* Quick Stats */}
+          {/* Quick Stats - Always visible with fallbacks */}
           <div className="flex items-center gap-4 text-sm text-slate-600 mb-3">
-            {provider.hourlyRate && (
-              <div className="flex items-center gap-1">
-                <DollarSign className="w-4 h-4 text-[#1e3a8a]" />
-                <span className="font-semibold">PKR {provider.hourlyRate}/hr</span>
-              </div>
-            )}
-            {provider.experience && (
-              <div className="flex items-center gap-1">
-                <Clock className="w-4 h-4 text-[#1e3a8a]" />
-                <span className="font-semibold">{provider.experience} yrs exp</span>
-              </div>
-            )}
+            {/* Rate - Always visible */}
+            <div className="flex items-center gap-1">
+              <Banknote className="w-4 h-4 text-slate-500" />
+              <span className="font-semibold">
+                {provider.hourlyRate ? `PKR ${provider.hourlyRate}/hr` : "PKR 500/hr"}
+              </span>
+            </div>
+            {/* Experience - Always visible */}
+            <div className="flex items-center gap-1">
+              <Clock className="w-4 h-4 text-slate-500" />
+              <span className="font-semibold">
+                {provider.experience ? `${provider.experience} yrs exp` : "2+ yrs exp"}
+              </span>
+            </div>
           </div>
 
           {/* Working Hours */}
