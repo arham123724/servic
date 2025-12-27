@@ -392,29 +392,19 @@ export default function ProviderDetailPage() {
                   </div>
                 )}
 
-                {provider.workingHours && (
-                  <div className="bg-slate-50 rounded-xl p-4 text-center col-span-2 border border-slate-200">
-                    <Clock className="w-5 h-5 text-slate-700 mx-auto mb-2" />
-                    <p className="text-xs text-slate-500 font-medium mb-1">Working Hours</p>
-                    <p className="font-semibold text-slate-900 text-sm">
-                      {formatTime(provider.workingHours.start)} - {formatTime(provider.workingHours.end)}
-                    </p>
-                  </div>
-                )}
-
-                {/* Fallback Working Hours when not defined */}
-                {!provider.workingHours && (
-                  <div className="bg-slate-50 rounded-xl p-4 text-center col-span-2 border border-slate-200">
-                    <Clock className="w-5 h-5 text-slate-700 mx-auto mb-2" />
-                    <p className="text-xs text-slate-500 font-medium mb-1">Working Hours</p>
-                    <p className="font-semibold text-slate-900 text-sm">
-                      09:00 AM - 06:00 PM
-                    </p>
-                  </div>
-                )}
+                {/* Working Hours - with proper fallback logic */}
+                <div className="bg-slate-50 rounded-xl p-4 text-center col-span-2 border border-slate-200">
+                  <Clock className="w-5 h-5 text-slate-700 mx-auto mb-2" />
+                  <p className="text-xs text-slate-500 font-medium mb-1">Working Hours</p>
+                  <p className="font-semibold text-slate-500 text-lg">
+                    {provider.workingHours?.start && provider.workingHours?.end
+                      ? `${formatTime(provider.workingHours.start)} - ${formatTime(provider.workingHours.end)}`
+                      : "09:00 AM - 06:00 PM"}
+                  </p>
+                </div>
               </div>
 
-              {/* Working Days - Always show with fallback */}
+              {/* Working Days - Read-only display (non-interactive) */}
               <div>
                 <h3 className="text-base font-semibold text-slate-900 mb-3">
                   Available Days
@@ -428,15 +418,15 @@ export default function ProviderDetailPage() {
                         : ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
                       return (
-                        <span
+                        <div
                           key={day}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${availableDays.includes(day)
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium cursor-default select-none ${availableDays.includes(day)
                             ? "bg-slate-900 text-white"
                             : "bg-slate-100 text-slate-400"
                             }`}
                         >
                           {day.slice(0, 3)}
-                        </span>
+                        </div>
                       );
                     }
                   )}
