@@ -291,12 +291,10 @@ export default function ProviderDetailPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-[#1e3a8a] rounded-lg flex items-center justify-center shadow-md">
+              <div className="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center shadow-md">
                 <Briefcase className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-slate-800">
-                Local<span className="text-[#1e3a8a]">Service</span>
-              </span>
+              <span className="text-2xl font-extrabold text-slate-900">Servic</span>
             </Link>
           </div>
         </div>
