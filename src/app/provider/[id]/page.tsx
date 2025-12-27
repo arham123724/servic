@@ -207,6 +207,42 @@ export default function ProviderDetailPage() {
     return slots;
   };
 
+  // Helper function to filter available slots based on selected date
+  const getAvailableSlots = (selectedDate: string): string[] => {
+    const allSlots = generateTimeSlots();
+
+    if (!selectedDate) return allSlots;
+
+    const selected = new Date(selectedDate);
+    const today = new Date();
+
+    // Check if selected date is today
+    const isToday = selected.toDateString() === today.toDateString();
+
+    if (!isToday) {
+      // Future date - return all slots
+      return allSlots;
+    }
+
+    // It's today - filter out past slots
+    const currentHour = today.getHours();
+    const currentMinutes = today.getMinutes();
+
+    const availableSlots = allSlots.filter((slot) => {
+      const [slotHour, slotMinutes] = slot.split(":").map(Number);
+
+      // If slot hour is greater than current hour, it's available
+      if (slotHour > currentHour) return true;
+
+      // If same hour, check minutes (add buffer of 30 mins for booking)
+      if (slotHour === currentHour && slotMinutes > currentMinutes + 30) return true;
+
+      return false;
+    });
+
+    return availableSlots;
+  };
+
   const isSlotBooked = (timeSlot: string) => {
     if (!bookingData.date) return false;
 
@@ -379,8 +415,8 @@ export default function ProviderDetailPage() {
                         <span
                           key={day}
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${provider.workingHours?.days?.includes(day)
-                              ? "bg-slate-900 text-white"
-                              : "bg-slate-100 text-slate-400"
+                            ? "bg-slate-900 text-white"
+                            : "bg-slate-100 text-slate-400"
                             }`}
                         >
                           {day.slice(0, 3)}
@@ -456,31 +492,46 @@ export default function ProviderDetailPage() {
                     {new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
                   </span>
                 </div>
-                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-                  {generateTimeSlots().map((slot) => {
-                    const todayDateStr = new Date().toISOString().split("T")[0];
-                    const isBooked = bookedSlots.some(
-                      (bookedSlot) =>
-                        new Date(bookedSlot.date).toDateString() === new Date(todayDateStr).toDateString() &&
-                        bookedSlot.timeSlot === slot
-                    );
+                {(() => {
+                  const todayDateStr = new Date().toISOString().split("T")[0];
+                  const availableSlotsToday = getAvailableSlots(todayDateStr);
+
+                  if (availableSlotsToday.length === 0) {
                     return (
-                      <div
-                        key={slot}
-                        className={`px-2 py-2 rounded-lg text-center text-xs font-medium transition-all ${isBooked
-                            ? "bg-red-100 text-red-700 border border-red-200"
-                            : "bg-green-100 text-green-700 border border-green-200"
-                          }`}
-                        title={isBooked ? "Booked" : "Available"}
-                      >
-                        <div className="font-semibold">{formatTime(slot).replace(" ", "")}</div>
-                        <div className="text-[10px] mt-0.5 opacity-75">
-                          {isBooked ? "Booked" : "Open"}
-                        </div>
+                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
+                        <p className="text-amber-700 font-medium">No available slots for today</p>
+                        <p className="text-amber-600 text-xs mt-1">Please select a future date to book</p>
                       </div>
                     );
-                  })}
-                </div>
+                  }
+
+                  return (
+                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                      {availableSlotsToday.map((slot) => {
+                        const isBooked = bookedSlots.some(
+                          (bookedSlot) =>
+                            new Date(bookedSlot.date).toDateString() === new Date(todayDateStr).toDateString() &&
+                            bookedSlot.timeSlot === slot
+                        );
+                        return (
+                          <div
+                            key={slot}
+                            className={`px-2 py-2 rounded-lg text-center text-xs font-medium transition-all ${isBooked
+                              ? "bg-red-100 text-red-700 border border-red-200"
+                              : "bg-green-100 text-green-700 border border-green-200"
+                              }`}
+                            title={isBooked ? "Booked" : "Available"}
+                          >
+                            <div className="font-semibold">{formatTime(slot).replace(" ", "")}</div>
+                            <div className="text-[10px] mt-0.5 opacity-75">
+                              {isBooked ? "Booked" : "Open"}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
                 <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
                   <span className="flex items-center gap-1">
                     <span className="w-3 h-3 bg-green-100 border border-green-200 rounded"></span>
@@ -578,21 +629,34 @@ export default function ProviderDetailPage() {
                           className="w-full px-4 py-3 rounded-lg border-2 border-slate-300 bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] shadow-sm"
                         >
                           <option value="" className="text-slate-500">Choose a time</option>
-                          {generateTimeSlots().map((slot) => {
-                            const booked = isSlotBooked(slot);
-                            return (
-                              <option
-                                key={slot}
-                                value={slot}
-                                disabled={booked}
-                                className={booked ? "text-slate-400 bg-slate-100" : "text-slate-900"}
-                              >
-                                {formatTime(slot)} {booked ? "🔒 Booked" : "✅ Available"}
-                              </option>
-                            );
-                          })}
+                          {(() => {
+                            const slots = getAvailableSlots(bookingData.date);
+                            if (slots.length === 0) {
+                              return (
+                                <option disabled>No slots available for this date</option>
+                              );
+                            }
+                            return slots.map((slot) => {
+                              const booked = isSlotBooked(slot);
+                              return (
+                                <option
+                                  key={slot}
+                                  value={slot}
+                                  disabled={booked}
+                                  className={booked ? "text-slate-400 bg-slate-100" : "text-slate-900"}
+                                >
+                                  {formatTime(slot)} {booked ? "🔒 Booked" : "✅ Available"}
+                                </option>
+                              );
+                            });
+                          })()}
                         </select>
-                        {bookingData.date && (
+                        {bookingData.date && getAvailableSlots(bookingData.date).length === 0 && (
+                          <p className="text-xs text-amber-600 mt-2 font-medium">
+                            ⚠️ No available slots for today. Please select a future date.
+                          </p>
+                        )}
+                        {bookingData.date && getAvailableSlots(bookingData.date).length > 0 && (
                           <p className="text-xs text-slate-500 mt-2">
                             🔒 = Booked slots (unavailable) | ✅ = Available slots
                           </p>
