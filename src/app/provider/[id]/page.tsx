@@ -41,6 +41,14 @@ export default function ProviderDetailPage() {
     notes: "",
   });
 
+  // Review system state
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [userReviews, setUserReviews] = useState<Array<{ name: string; stars: number; text: string; time: string }>>([]);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
   useEffect(() => {
     const fetchProvider = async () => {
       try {
@@ -791,7 +799,7 @@ export default function ProviderDetailPage() {
                 </div>
               )}
 
-              {/* Customer Reviews Section - Category Aware */}
+              {/* Customer Reviews Section - Category Aware with Interactive Modal */}
               {(() => {
                 // Category-specific mock reviews
                 const categoryReviews: Record<string, { name: string; stars: number; text: string; time: string }[]> = {
@@ -818,10 +826,13 @@ export default function ProviderDetailPage() {
                 };
 
                 // Get reviews based on category, with default fallback
-                const reviews = categoryReviews[provider.category] || [
+                const baseReviews = categoryReviews[provider.category] || [
                   { name: "Muhammad Hassan", stars: 5, text: "Very professional and punctual. Did excellent work and was very thorough with the job.", time: "2 days ago" },
                   { name: "Aisha Begum", stars: 4, text: "Good service overall. Would recommend to others looking for quality work.", time: "1 week ago" },
                 ];
+
+                // Combine user reviews with base reviews
+                const allReviews = [...userReviews, ...baseReviews];
 
                 // Calculate average rating (slightly randomized per category)
                 const categoryRatings: Record<string, number> = {
@@ -832,7 +843,27 @@ export default function ProviderDetailPage() {
                   Carpenter: 4.8,
                 };
                 const avgRating = categoryRatings[provider.category] || 4.7;
-                const reviewCount = provider.category === "Tutor" ? 18 : provider.category === "Mechanic" ? 9 : 12;
+                const reviewCount = (provider.category === "Tutor" ? 18 : provider.category === "Mechanic" ? 9 : 12) + userReviews.length;
+
+                // Handle review submission
+                const handleReviewSubmit = () => {
+                  if (reviewRating === 0 || reviewText.trim() === "") return;
+
+                  const newReview = {
+                    name: user?.name || "You",
+                    stars: reviewRating,
+                    text: reviewText,
+                    time: "Just now",
+                  };
+
+                  setUserReviews([newReview, ...userReviews]);
+                  setShowReviewModal(false);
+                  setReviewRating(0);
+                  setReviewText("");
+                  setToastMessage("Review submitted successfully!");
+                  setShowToast(true);
+                  setTimeout(() => setShowToast(false), 3000);
+                };
 
                 return (
                   <div className="border-t border-slate-200 pt-6 mt-6">
@@ -841,12 +872,86 @@ export default function ProviderDetailPage() {
                       <h3 className="text-lg font-bold text-slate-900">
                         Customer Reviews
                       </h3>
-                      {user && (
-                        <button className="px-4 py-2 border-2 border-slate-900 text-slate-900 font-semibold rounded-lg hover:bg-slate-50 transition-colors">
+                      {/* Only show for logged-in Clients (not Providers) */}
+                      {user && user.role !== "provider" && (
+                        <button
+                          onClick={() => setShowReviewModal(true)}
+                          className="px-4 py-2 border-2 border-slate-900 text-slate-900 font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+                        >
                           Write a Review
                         </button>
                       )}
                     </div>
+
+                    {/* Review Modal */}
+                    {showReviewModal && (
+                      <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+                          <h4 className="text-xl font-bold text-slate-900 mb-4">Write a Review</h4>
+
+                          {/* Star Rating Selector */}
+                          <div className="mb-4">
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">
+                              Your Rating
+                            </label>
+                            <div className="flex items-center gap-1">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <button
+                                  key={star}
+                                  type="button"
+                                  onClick={() => setReviewRating(star)}
+                                  className="p-1 hover:scale-110 transition-transform"
+                                >
+                                  <Star
+                                    className={`w-8 h-8 cursor-pointer ${star <= reviewRating
+                                        ? "text-yellow-400 fill-yellow-400"
+                                        : "text-slate-300 hover:text-yellow-300"
+                                      }`}
+                                  />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Review Text */}
+                          <div className="mb-6">
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">
+                              Your Review
+                            </label>
+                            <textarea
+                              rows={4}
+                              placeholder="Share your experience with this provider..."
+                              value={reviewText}
+                              onChange={(e) => setReviewText(e.target.value)}
+                              className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 resize-none transition-colors"
+                            />
+                          </div>
+
+                          {/* Modal Actions */}
+                          <div className="flex gap-3">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setShowReviewModal(false);
+                                setReviewRating(0);
+                                setReviewText("");
+                              }}
+                              className="flex-1 px-4 py-2.5 text-slate-600 hover:text-slate-800 hover:bg-slate-100 font-semibold rounded-lg transition-all border border-slate-200"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleReviewSubmit}
+                              disabled={reviewRating === 0 || reviewText.trim() === ""}
+                              className="flex-1 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all"
+                            >
+                              Submit Review
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Rating Summary and Reviews Grid */}
                     <div className="grid md:grid-cols-3 gap-6">
@@ -866,7 +971,7 @@ export default function ProviderDetailPage() {
 
                       {/* Reviews List */}
                       <div className="md:col-span-2 space-y-4">
-                        {reviews.map((review, index) => (
+                        {allReviews.map((review, index) => (
                           <div key={index} className="border border-slate-200 rounded-lg p-4 bg-white">
                             <div className="flex items-start justify-between mb-2">
                               <div>
@@ -890,6 +995,16 @@ export default function ProviderDetailPage() {
                   </div>
                 );
               })()}
+
+              {/* Success Toast */}
+              {showToast && (
+                <div className="fixed bottom-6 right-6 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-pulse">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5" />
+                    <span className="font-medium">{toastMessage}</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
