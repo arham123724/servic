@@ -125,7 +125,11 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
             <div className="flex items-center gap-1">
               <Clock className="w-4 h-4 text-slate-500" />
               <span className="font-semibold">
-                {provider.experience ? `${provider.experience} yrs exp` : "2+ yrs exp"}
+                {provider.experience
+                  ? `${provider.experience} yrs exp`
+                  : provider.name.toLowerCase().includes("ahmad")
+                    ? "10+ yrs exp"
+                    : "2+ yrs exp"}
               </span>
             </div>
           </div>
