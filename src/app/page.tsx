@@ -121,12 +121,10 @@ export default function Home() {
             <div className="w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center">
               <Briefcase className="w-5 h-5 text-white" />
             </div>
-            <span className="text-lg font-semibold text-white">
-              Local<span className="text-[#2563EB]">Service</span>
-            </span>
+            <span className="text-lg font-semibold text-white">Servic</span>
           </div>
           <p className="text-sm">
-            © {new Date().getFullYear()} LocalService. All rights reserved.
+              © {new Date().getFullYear()} Servic. All rights reserved.
           </p>
           <p className="text-xs mt-2">
             Connecting you with trusted local service professionals.

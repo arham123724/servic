@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Wrench, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Briefcase, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";import { validateEmail, getEmailError } from "@/lib/validation";
 export default function LoginPage() {
   const router = useRouter();
@@ -61,10 +61,12 @@ export default function LoginPage() {
       {/* Minimal Header */}
       <header className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center gap-2 group">
-              <Wrench className="w-7 h-7 text-slate-700 group-hover:text-slate-900 transition-colors" />
-              <span className="text-xl font-bold text-slate-900">LocalServe</span>
+            <div className="flex items-center justify-between h-16">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="bg-slate-900 p-2 rounded-lg shadow-md">
+                <Briefcase className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-2xl font-extrabold text-slate-900">Servic</span>
             </Link>
           </div>
         </div>
@@ -79,7 +81,7 @@ export default function LoginPage() {
             <div className="px-8 pt-8 pb-6 text-center">
               <h1 className="text-3xl font-bold text-slate-900 mb-2">Welcome Back</h1>
               <p className="text-slate-600">
-                Log in to your LocalServe account
+                Log in to your Servic account
               </p>
             </div>
 

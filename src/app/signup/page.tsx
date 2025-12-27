@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Wrench, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, Briefcase } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";import { validateEmail, getEmailError } from "@/lib/validation";
 export default function SignupPage() {
   const router = useRouter();
@@ -77,30 +77,31 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center gap-2">
-              <Wrench className="w-8 h-8 text-[#2563EB]" />
-              <span className="text-xl font-bold text-slate-800">LocalServe</span>
-            </Link>
-          </div>
+      {/* Minimal Header */}
+      <header className="bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="bg-slate-900 p-2 rounded-lg shadow-md">
+              <Briefcase className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-2xl font-extrabold text-slate-900">Servic</span>
+          </Link>
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Main Content - Minimalist Design */}
       <main className="flex-1 flex items-center justify-center py-12 px-4">
         <div className="w-full max-w-md">
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div className="bg-gradient-to-r from-[#2563EB] to-[#1e40af] px-6 py-8 text-white text-center">
-              <h1 className="text-2xl font-bold">Create an Account</h1>
-              <p className="text-blue-100 mt-2">
-                Join LocalServe to find trusted service providers
+          <div className="bg-white rounded-xl shadow-lg border border-slate-200">
+            {/* Header */}
+            <div className="px-8 pt-8 pb-6 text-center">
+              <h1 className="text-3xl font-bold text-slate-900">Create an Account</h1>
+              <p className="text-slate-600 mt-2">
+                Join Servic to find trusted service providers
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-5">
+            <form onSubmit={handleSubmit} className="px-8 pb-8 space-y-5">
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
                   {error}
@@ -119,7 +120,7 @@ export default function SignupPage() {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Enter your full name"
-                  className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition-all"
                   required
                 />
               </div>
@@ -136,7 +137,7 @@ export default function SignupPage() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="you@example.com"
-                  className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition-all"
                   required
                 />
               </div>
@@ -154,7 +155,7 @@ export default function SignupPage() {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="At least 6 characters"
-                    className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent transition-all pr-12"
+                    className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition-all pr-12"
                     required
                   />
                   <button
@@ -179,7 +180,7 @@ export default function SignupPage() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="Re-enter your password"
-                  className="w-full px-4 py-3 rounded-lg border-2 border-slate-200 bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] transition-all"
+                  className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition-all"
                   required
                 />
               </div>
@@ -188,7 +189,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 bg-[#f59e0b] hover:bg-[#d97706] disabled:bg-slate-400 text-white font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-lg hover:shadow-xl transform hover:scale-105"
+                className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg"
               >
                 {loading ? (
                   <>
@@ -205,7 +206,7 @@ export default function SignupPage() {
                 Already have an account?{" "}
                 <Link
                   href="/login"
-                  className="text-[#1e3a8a] hover:text-[#1e40af] hover:underline font-bold"
+                  className="text-slate-900 hover:text-slate-700 font-semibold transition-colors"
                 >
                   Log in
                 </Link>

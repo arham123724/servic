@@ -108,7 +108,7 @@ export default function ProviderDetailPage() {
 
     const phone = provider.phone.replace(/[^0-9]/g, "");
     const message = encodeURIComponent(
-      `Hi ${provider.name}, I found you on LocalService and I'm interested in your ${provider.category} services.`
+      `Hi ${provider.name}, I found you on Servic and I'm interested in your ${provider.category} services.`
     );
     window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
   };

@@ -187,8 +187,10 @@ export default function RegisterPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2">
-              <Wrench className="w-8 h-8 text-[#2563EB]" />
-              <span className="text-xl font-bold text-slate-800">LocalServe</span>
+              <div className="bg-slate-900 p-2 rounded-lg shadow-md">
+                <Briefcase className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-2xl font-extrabold text-slate-900">Servic</span>
             </Link>
           </div>
         </div>

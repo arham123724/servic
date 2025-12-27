@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LocalServe - Find Trusted Local Services",
+  title: "Servic - Find Trusted Local Services",
   description: "Connect with verified electricians, plumbers, tutors, carpenters, and mechanics in your city. Quick, reliable, and hassle-free.",
 };
 
