@@ -30,7 +30,7 @@ export default function SearchBar({
           <select
             value={category}
             onChange={(e) => onCategoryChange(e.target.value)}
-            className="w-full px-4 py-3.5 rounded-xl border-2 border-slate-200 bg-slate-50 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] hover:border-slate-300 transition-all cursor-pointer"
+            className="w-full px-4 py-3.5 rounded-xl border-2 border-slate-300 bg-slate-50 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] hover:border-slate-300 transition-all cursor-pointer"
           >
             <option value="all">All Categories</option>
             {CATEGORIES.map((cat) => (
@@ -50,7 +50,7 @@ export default function SearchBar({
           <select
             value={location}
             onChange={(e) => onLocationChange(e.target.value)}
-            className="w-full px-4 py-3.5 rounded-xl border-2 border-slate-200 bg-slate-50 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] hover:border-slate-300 transition-all cursor-pointer"
+            className="w-full px-4 py-3.5 rounded-xl border-2 border-slate-300 bg-slate-50 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] hover:border-slate-300 transition-all cursor-pointer"
           >
             <option value="all">All Cities</option>
             {locations.map((loc) => (
