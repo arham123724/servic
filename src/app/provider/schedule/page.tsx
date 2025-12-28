@@ -15,6 +15,7 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
+  ArrowLeft, // Imported for the Back Button
 } from "lucide-react";
 import { Booking } from "@/types";
 import Header from "@/components/Header";
@@ -62,7 +63,15 @@ export default function ProviderSchedulePage() {
           allBookings.push(...providerData.data);
         }
 
-        setBookings(allBookings);
+        // --- CRITICAL FIX: DEDUPLICATION LOGIC ---
+        // This removes duplicate bookings if the API returns the same item twice
+        // It creates a Map using the _id as the key, effectively keeping only unique items
+        const uniqueBookings = Array.from(
+          new Map(allBookings.map((item) => [item._id, item])).values()
+        );
+        // -----------------------------------------
+
+        setBookings(uniqueBookings);
       } catch (err) {
         setError("Failed to load bookings");
         console.error(err);
@@ -232,6 +241,15 @@ export default function ProviderSchedulePage() {
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        {/* ADDED BACK BUTTON HERE */}
+        <div className="mb-6">
+          <Link href="/" className="flex items-center text-gray-600 hover:text-blue-600 transition-colors w-fit">
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            <span className="font-medium">Back to Home</span>
+          </Link>
+        </div>
+
         {/* Page Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
@@ -256,11 +274,10 @@ export default function ProviderSchedulePage() {
               <button
                 key={status}
                 onClick={() => setFilter(status as typeof filter)}
-                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                  filter === status
+                className={`px-4 py-2 rounded-lg font-semibold transition-all ${filter === status
                     ? "bg-[#1e3a8a] text-white shadow-md"
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800"
-                }`}
+                  }`}
               >
                 {status.charAt(0).toUpperCase() + status.slice(1)}
                 {status === "all" && ` (${bookings.length})`}
@@ -289,13 +306,12 @@ export default function ProviderSchedulePage() {
             {sortedBookings.map((booking) => {
               // Check if this is a booking made TO you (you're the provider)
               const isProviderBooking = booking.userId !== user?.id;
-              
+
               return (
                 <div
                   key={booking._id}
-                  className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border-l-4 ${
-                    isProviderBooking ? "border-l-green-500" : "border-l-blue-500"
-                  } ${booking.isNew ? "ring-2 ring-red-300" : ""}`}
+                  className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border-l-4 ${isProviderBooking ? "border-l-green-500" : "border-l-blue-500"
+                    } ${booking.isNew ? "ring-2 ring-red-300" : ""}`}
                   onClick={() => booking.isNew && markAsRead(booking._id)}
                 >
                   <div className="p-6">
@@ -319,9 +335,8 @@ export default function ProviderSchedulePage() {
 
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold ${
-                          isProviderBooking ? "bg-green-600" : "bg-[#2563EB]"
-                        }`}>
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold ${isProviderBooking ? "bg-green-600" : "bg-[#2563EB]"
+                          }`}>
                           {booking.clientName.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -344,7 +359,7 @@ export default function ProviderSchedulePage() {
                           booking.status.slice(1)}
                       </span>
                     </div>
-                    </div>
+                  </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div className="flex items-center gap-2 text-slate-600">
