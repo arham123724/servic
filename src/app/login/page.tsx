@@ -168,15 +168,21 @@ export default function LoginPage() {
                 <button
                   type="button"
                   disabled={loading}
-                  onClick={() => {
-                    // Frontend-only demo login - no API call
-                    setDemoUser({
-                      id: "demo-client-001",
-                      name: "Ali Client",
-                      email: "demo@client.com",
-                      role: "user",
-                    });
-                    router.push("/");
+                  onClick={async () => {
+                    setLoading(true);
+                    setError("");
+                    try {
+                      const result = await login("client@demo.com", "123456");
+                      if (result.success) {
+                        router.push("/");
+                      } else {
+                        setError(result.error || "Demo login failed. Please try again.");
+                      }
+                    } catch {
+                      setError("Demo login failed. Please try again.");
+                    } finally {
+                      setLoading(false);
+                    }
                   }}
                   className="py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer text-sm"
                 >
@@ -185,15 +191,21 @@ export default function LoginPage() {
                 <button
                   type="button"
                   disabled={loading}
-                  onClick={() => {
-                    // Frontend-only demo login - no API call
-                    setDemoUser({
-                      id: "demo-provider-001",
-                      name: "Ahmad Provider",
-                      email: "demo@provider.com",
-                      role: "provider",
-                    });
-                    router.push("/schedule");
+                  onClick={async () => {
+                    setLoading(true);
+                    setError("");
+                    try {
+                      const result = await login("provider@demo.com", "123456");
+                      if (result.success) {
+                        router.push("/schedule");
+                      } else {
+                        setError(result.error || "Demo login failed. Please try again.");
+                      }
+                    } catch {
+                      setError("Demo login failed. Please try again.");
+                    } finally {
+                      setLoading(false);
+                    }
                   }}
                   className="py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-300 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer text-sm"
                 >
