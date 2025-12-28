@@ -5,6 +5,7 @@ export type BookingStatus = "pending" | "confirmed" | "completed" | "cancelled";
 export interface IBooking extends Document {
   providerId: Types.ObjectId;
   userId: Types.ObjectId;
+  providerEmail?: string; // <--- ADDED THIS (Optional for safety)
   clientName: string;
   clientEmail: string;
   clientPhone: string;
@@ -29,6 +30,14 @@ const BookingSchema = new Schema(
       ref: "User",
       required: [true, "User ID is required"],
     },
+    // --- NEW FIELD ADDED HERE ---
+    providerEmail: {
+      type: String,
+      required: false, // False prevents crashes on old data
+      trim: true,
+      lowercase: true,
+    },
+    // ----------------------------
     clientName: {
       type: String,
       required: [true, "Client name is required"],
