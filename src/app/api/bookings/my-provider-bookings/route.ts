@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Booking from "@/models/Booking";
 import { getSession } from "@/lib/auth";
+import "@/models/User"; // <--- ADD THIS LINE
 
 // GET /api/bookings/my-provider-bookings
 export async function GET(request: NextRequest) {

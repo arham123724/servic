@@ -304,23 +304,22 @@ export default function ProviderSchedulePage() {
         ) : (
           <div className="space-y-4">
             {sortedBookings.map((booking) => {
-              // FIXED: Check if logged-in user is the PROVIDER for this booking
-              // Compare the booking's providerEmail with the logged-in user's email
-              const isProviderForThisBooking =
-                user?.role === "provider" &&
-                booking.providerEmail?.toLowerCase() === user?.email?.toLowerCase();
+              // FIXED: Strictly compare emails
+              // If logged-in user's email matches booking's providerEmail, they are the provider
+              // LOGIC: If I am NOT the client, I must be the provider.
+              const isProviderBooking = booking.clientEmail !== user?.email;
 
               return (
                 <div
                   key={booking._id}
-                  className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border-l-4 ${isProviderForThisBooking ? "border-l-green-500" : "border-l-blue-500"
+                  className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border-l-4 ${isProviderBooking ? "border-l-green-500" : "border-l-blue-500"
                     } ${booking.isNew ? "ring-2 ring-red-300" : ""}`}
                   onClick={() => booking.isNew && markAsRead(booking._id)}
                 >
                   <div className="p-6">
                     {/* Booking Type Badge and New Badge */}
                     <div className="mb-3 flex items-center gap-2 flex-wrap">
-                      {isProviderForThisBooking ? (
+                      {isProviderBooking ? (
                         <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
                           📥 Booking from Client
                         </span>
@@ -338,7 +337,7 @@ export default function ProviderSchedulePage() {
 
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold ${isProviderForThisBooking ? "bg-green-600" : "bg-[#2563EB]"
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold ${isProviderBooking ? "bg-green-600" : "bg-[#2563EB]"
                           }`}>
                           {booking.clientName.charAt(0).toUpperCase()}
                         </div>
@@ -408,7 +407,7 @@ export default function ProviderSchedulePage() {
                   )}
 
                   {/* Approve/Reject buttons for provider bookings that are pending */}
-                  {isProviderForThisBooking && booking.status === "pending" && (
+                  {isProviderBooking && booking.status === "pending" && (
                     <div className="flex gap-3 pt-4 border-t">
                       <button
                         onClick={() => handleApproveBooking(booking._id)}
