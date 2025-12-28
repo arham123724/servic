@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Briefcase } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import ProviderGrid from "@/components/ProviderGrid";
@@ -42,8 +42,8 @@ export default function Home() {
     fetchProviders();
   }, []);
 
-  // Filter providers when category or location changes
-  const filterProviders = useCallback(() => {
+  // Filter providers - NOW ONLY called on button click, not automatically
+  const handleSearch = () => {
     let filtered = [...providers];
 
     if (category !== "all") {
@@ -55,11 +55,7 @@ export default function Home() {
     }
 
     setFilteredProviders(filtered);
-  }, [providers, category, location]);
-
-  useEffect(() => {
-    filterProviders();
-  }, [filterProviders]);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -85,6 +81,7 @@ export default function Home() {
               locations={locations}
               onCategoryChange={setCategory}
               onLocationChange={setLocation}
+              onSearch={handleSearch}
             />
           </div>
         </div>
@@ -102,9 +99,8 @@ export default function Home() {
               <p className="text-slate-500 mt-1">
                 {loading
                   ? "Loading..."
-                  : `${filteredProviders.length} provider${
-                      filteredProviders.length !== 1 ? "s" : ""
-                    } found`}
+                  : `${filteredProviders.length} provider${filteredProviders.length !== 1 ? "s" : ""
+                  } found`}
               </p>
             </div>
           </div>
@@ -124,7 +120,7 @@ export default function Home() {
             <span className="text-lg font-semibold text-white">Servic</span>
           </div>
           <p className="text-sm">
-              © {new Date().getFullYear()} Servic. All rights reserved.
+            © {new Date().getFullYear()} Servic. All rights reserved.
           </p>
           <p className="text-xs mt-2">
             Connecting you with trusted local service professionals.
