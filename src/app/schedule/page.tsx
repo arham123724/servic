@@ -15,59 +15,72 @@ import {
 } from "lucide-react";
 import Header from "@/components/Header";
 
-// Mock appointment data
+// Appointment data with email fields for filtering
 interface Appointment {
     id: number;
-    clientName: string;
     providerName: string;
+    providerEmail: string;
+    clientName: string;
+    clientEmail: string;
     service: string;
     date: string;
     time: string;
-    status: "pending" | "confirmed" | "cancelled";
+    status: "pending" | "confirmed" | "cancelled" | "completed";
+    address?: string;
 }
 
+// Master Data - Works for Demo AND Normal users via email filtering
 const initialAppointments: Appointment[] = [
+    // --- THE DEMO CONNECTION (Visible to BOTH demo users) ---
     {
         id: 1,
-        clientName: "Ali Client",
-        providerName: "Ahmad Electrician",
-        service: "Electrician",
-        date: "2025-12-28",
+        providerName: "Demo Provider",
+        providerEmail: "provider@demo.com",
+        clientName: "Demo Client",
+        clientEmail: "client@demo.com",
+        service: "Full Home Wiring",
+        date: "2025-12-30",
         time: "10:00 AM",
         status: "pending",
+        address: "123 Demo St, Karachi",
     },
+    // --- PAST HISTORY (Visible only to Demo Client) ---
     {
         id: 2,
-        clientName: "Sara Ahmed",
-        providerName: "Fatima Tutor",
-        service: "Tutor",
-        date: "2025-12-29",
-        time: "02:00 PM",
-        status: "confirmed",
+        providerName: "Ali Plumber",
+        providerEmail: "ali@plumber.com",
+        clientName: "Demo Client",
+        clientEmail: "client@demo.com",
+        service: "Pipe Leakage Fix",
+        date: "2025-11-10",
+        time: "2:00 PM",
+        status: "completed",
     },
+    // --- PAST HISTORY (Visible only to Demo Provider) ---
     {
         id: 3,
-        clientName: "Hassan Raza",
-        providerName: "Shehzad Plumber",
-        service: "Plumber",
-        date: "2025-12-30",
+        providerName: "Demo Provider",
+        providerEmail: "provider@demo.com",
+        clientName: "Sara Khan",
+        clientEmail: "sara@gmail.com",
+        service: "Fan Installation",
+        date: "2025-10-05",
         time: "11:00 AM",
-        status: "pending",
-    },
-    {
-        id: 4,
-        clientName: "Zainab Fatima",
-        providerName: "Usman Mechanic",
-        service: "Mechanic",
-        date: "2025-12-31",
-        time: "09:00 AM",
-        status: "confirmed",
+        status: "completed",
     },
 ];
 
 export default function SchedulePage() {
     const { user, loading } = useAuth();
     const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments);
+
+    // === UNIVERSAL FILTER: Works for EVERYONE (Real or Demo) ===
+    // Show appointment if I am the Client OR if I am the Provider
+    const myAppointments = user
+        ? appointments.filter(
+            (appt) => appt.clientEmail === user.email || appt.providerEmail === user.email
+        )
+        : [];
 
     // Handle confirm booking (Provider action)
     const handleConfirm = (id: number) => {
@@ -121,6 +134,13 @@ export default function SchedulePage() {
                     text: "text-red-800",
                     icon: <XCircle className="w-4 h-4" />,
                     label: "Cancelled",
+                };
+            case "completed":
+                return {
+                    bg: "bg-blue-100",
+                    text: "text-blue-800",
+                    icon: <CheckCircle className="w-4 h-4" />,
+                    label: "Completed ✓",
                 };
             default:
                 return {
@@ -203,7 +223,7 @@ export default function SchedulePage() {
 
                     {/* Appointments List */}
                     <div className="space-y-4">
-                        {appointments.length === 0 ? (
+                        {myAppointments.length === 0 ? (
                             <div className="text-center py-12 bg-white rounded-xl border border-slate-200">
                                 <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-4" />
                                 <h3 className="text-lg font-semibold text-slate-700 mb-2">
@@ -216,7 +236,7 @@ export default function SchedulePage() {
                                 </p>
                             </div>
                         ) : (
-                            appointments.map((appointment) => {
+                            myAppointments.map((appointment) => {
                                 const statusBadge = getStatusBadge(appointment.status);
 
                                 return (
