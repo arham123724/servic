@@ -4,10 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Briefcase, Mail, Lock, Eye, EyeOff } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";import { validateEmail, getEmailError } from "@/lib/validation";
+import { useAuth } from "@/context/AuthContext"; import { validateEmail, getEmailError } from "@/lib/validation";
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, setDemoUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -61,7 +61,7 @@ export default function LoginPage() {
       {/* Minimal Header */}
       <header className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2">
               <div className="bg-slate-900 p-2 rounded-lg shadow-md">
                 <Briefcase className="w-6 h-6 text-white" />
@@ -150,6 +150,56 @@ export default function LoginPage() {
                   "Log In"
                 )}
               </button>
+
+              {/* Demo Access Section */}
+              <div className="relative py-4">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-slate-200"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-white text-slate-500 font-medium">
+                    — OR Access Demo Account —
+                  </span>
+                </div>
+              </div>
+
+              {/* Demo Buttons */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => {
+                    // Frontend-only demo login - no API call
+                    setDemoUser({
+                      id: "demo-client-001",
+                      name: "Ali Client",
+                      email: "demo@client.com",
+                      role: "user",
+                    });
+                    router.push("/");
+                  }}
+                  className="py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer text-sm"
+                >
+                  👨‍💼 Demo as Client
+                </button>
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => {
+                    // Frontend-only demo login - no API call
+                    setDemoUser({
+                      id: "demo-provider-001",
+                      name: "Ahmad Provider",
+                      email: "demo@provider.com",
+                      role: "provider",
+                    });
+                    router.push("/schedule");
+                  }}
+                  className="py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-300 text-white font-semibold rounded-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer text-sm"
+                >
+                  🛠️ Demo as Provider
+                </button>
+              </div>
 
               {/* Signup Link */}
               <p className="text-center text-slate-600 text-sm pt-2">

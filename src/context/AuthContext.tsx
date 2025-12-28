@@ -22,6 +22,7 @@ interface AuthContextType {
   signup: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  setDemoUser: (userData: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -102,9 +103,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Demo login - Frontend only, no API call
+  const setDemoUser = (userData: User) => {
+    setUser(userData);
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, signup, logout, refreshUser }}
+      value={{ user, loading, login, signup, logout, refreshUser, setDemoUser }}
     >
       {children}
     </AuthContext.Provider>
