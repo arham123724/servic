@@ -11,8 +11,15 @@ export default function Home() {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [filteredProviders, setFilteredProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState("all");
-  const [location, setLocation] = useState("all");
+
+  // Input state (for dropdowns - changes freely without filtering)
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedLocation, setSelectedLocation] = useState("all");
+
+  // Active state (controls actual filtering - only changes on Search click)
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [activeLocation, setActiveLocation] = useState("all");
+
   const [locations, setLocations] = useState<string[]>([]);
 
   // Fetch all providers on mount
@@ -42,24 +49,30 @@ export default function Home() {
     fetchProviders();
   }, []);
 
-  // Filter providers when category or location changes
+  // Filter providers ONLY when active filters change (triggered by Search button)
   const filterProviders = useCallback(() => {
     let filtered = [...providers];
 
-    if (category !== "all") {
-      filtered = filtered.filter((p) => p.category === category);
+    if (activeCategory !== "all") {
+      filtered = filtered.filter((p) => p.category === activeCategory);
     }
 
-    if (location !== "all") {
-      filtered = filtered.filter((p) => p.location === location);
+    if (activeLocation !== "all") {
+      filtered = filtered.filter((p) => p.location === activeLocation);
     }
 
     setFilteredProviders(filtered);
-  }, [providers, category, location]);
+  }, [providers, activeCategory, activeLocation]);
 
   useEffect(() => {
     filterProviders();
   }, [filterProviders]);
+
+  // Search handler - copies input values to active values, triggering the filter
+  const handleSearch = () => {
+    setActiveCategory(selectedCategory);
+    setActiveLocation(selectedLocation);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -80,11 +93,12 @@ export default function Home() {
           {/* Search Bar */}
           <div className="max-w-4xl mx-auto">
             <SearchBar
-              category={category}
-              location={location}
+              category={selectedCategory}
+              location={selectedLocation}
               locations={locations}
-              onCategoryChange={setCategory}
-              onLocationChange={setLocation}
+              onCategoryChange={setSelectedCategory}
+              onLocationChange={setSelectedLocation}
+              onSearch={handleSearch}
             />
           </div>
         </div>
@@ -102,9 +116,8 @@ export default function Home() {
               <p className="text-slate-500 mt-1">
                 {loading
                   ? "Loading..."
-                  : `${filteredProviders.length} provider${
-                      filteredProviders.length !== 1 ? "s" : ""
-                    } found`}
+                  : `${filteredProviders.length} provider${filteredProviders.length !== 1 ? "s" : ""
+                  } found`}
               </p>
             </div>
           </div>
@@ -124,7 +137,7 @@ export default function Home() {
             <span className="text-lg font-semibold text-white">Servic</span>
           </div>
           <p className="text-sm">
-              © {new Date().getFullYear()} Servic. All rights reserved.
+            © {new Date().getFullYear()} Servic. All rights reserved.
           </p>
           <p className="text-xs mt-2">
             Connecting you with trusted local service professionals.

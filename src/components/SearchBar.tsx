@@ -9,6 +9,7 @@ interface SearchBarProps {
   locations: string[];
   onCategoryChange: (category: string) => void;
   onLocationChange: (location: string) => void;
+  onSearch: () => void;
 }
 
 export default function SearchBar({
@@ -17,6 +18,7 @@ export default function SearchBar({
   locations,
   onCategoryChange,
   onLocationChange,
+  onSearch,
 }: SearchBarProps) {
   return (
     <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 border border-slate-100">
@@ -63,7 +65,10 @@ export default function SearchBar({
 
         {/* Search Button - Now the prominent element with Deep Navy */}
         <div className="flex items-end">
-          <button className="w-full md:w-auto px-10 py-3.5 bg-[#1e3a8a] hover:bg-[#1e40af] text-white font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 transform cursor-pointer">
+          <button
+            onClick={onSearch}
+            className="w-full md:w-auto px-10 py-3.5 bg-[#1e3a8a] hover:bg-[#1e40af] text-white font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 transform cursor-pointer"
+          >
             <Search className="w-5 h-5" />
             <span>Search</span>
           </button>
