@@ -344,8 +344,9 @@ export default function ProviderSchedulePage() {
                           booking.status.slice(1)}
                       </span>
                     </div>
-                    </div>
+                  </div>
 
+                  <div className="px-6 pb-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div className="flex items-center gap-2 text-slate-600">
                       <Clock className="w-4 h-4 text-slate-400" />
@@ -410,6 +411,7 @@ export default function ProviderSchedulePage() {
                       </button>
                     </div>
                   )}
+                  </div>
                 </div>
               );
             })}

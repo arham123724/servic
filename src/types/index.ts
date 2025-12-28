@@ -39,7 +39,13 @@ export interface Lead {
 
 export interface Booking {
   _id: string;
-  providerId: string;
+  providerId: string | {
+    _id: string;
+    name?: string;
+    category?: string;
+    location?: string;
+    phone?: string;
+  };
   userId: string;
   clientName: string;
   clientEmail: string;

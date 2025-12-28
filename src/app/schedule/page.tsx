@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import {
@@ -14,90 +14,113 @@ import {
     ArrowLeft,
 } from "lucide-react";
 import Header from "@/components/Header";
-
-// Appointment data with email fields for filtering
-interface Appointment {
-    id: number;
-    providerName: string;
-    providerEmail: string;
-    clientName: string;
-    clientEmail: string;
-    service: string;
-    date: string;
-    time: string;
-    status: "pending" | "confirmed" | "cancelled" | "completed";
-    address?: string;
-}
-
-// Master Data - Works for Demo AND Normal users via email filtering
-const initialAppointments: Appointment[] = [
-    // --- THE DEMO CONNECTION (Visible to BOTH demo users) ---
-    {
-        id: 1,
-        providerName: "Demo Provider",
-        providerEmail: "provider@demo.com",
-        clientName: "Demo Client",
-        clientEmail: "client@demo.com",
-        service: "Full Home Wiring",
-        date: "2025-12-30",
-        time: "10:00 AM",
-        status: "pending",
-        address: "123 Demo St, Karachi",
-    },
-    // --- PAST HISTORY (Visible only to Demo Client) ---
-    {
-        id: 2,
-        providerName: "Ali Plumber",
-        providerEmail: "ali@plumber.com",
-        clientName: "Demo Client",
-        clientEmail: "client@demo.com",
-        service: "Pipe Leakage Fix",
-        date: "2025-11-10",
-        time: "2:00 PM",
-        status: "completed",
-    },
-    // --- PAST HISTORY (Visible only to Demo Provider) ---
-    {
-        id: 3,
-        providerName: "Demo Provider",
-        providerEmail: "provider@demo.com",
-        clientName: "Sara Khan",
-        clientEmail: "sara@gmail.com",
-        service: "Fan Installation",
-        date: "2025-10-05",
-        time: "11:00 AM",
-        status: "completed",
-    },
-];
+import { Booking } from "@/types";
 
 export default function SchedulePage() {
     const { user, loading } = useAuth();
-    const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments);
+    const [bookings, setBookings] = useState<Booking[]>([]);
+    const [dataLoading, setDataLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [updatingBookingId, setUpdatingBookingId] = useState<string | null>(null);
 
-    // === UNIVERSAL FILTER: Works for EVERYONE (Real or Demo) ===
-    // Show appointment if I am the Client OR if I am the Provider
-    const myAppointments = user
-        ? appointments.filter(
-            (appt) => appt.clientEmail === user.email || appt.providerEmail === user.email
-        )
-        : [];
+    useEffect(() => {
+        const fetchBookings = async () => {
+            if (!user) {
+                setDataLoading(false);
+                return;
+            }
+
+            try {
+                // Fetch both client bookings and provider bookings
+                const [clientRes, providerRes] = await Promise.all([
+                    fetch("/api/bookings"),
+                    fetch("/api/bookings/my-provider-bookings"),
+                ]);
+
+                const clientData = await clientRes.json();
+                const providerData = await providerRes.json();
+
+                const allBookings: Booking[] = [];
+
+                // Add client bookings (bookings I made)
+                if (clientData.success && clientData.data) {
+                    allBookings.push(...clientData.data);
+                }
+
+                // Add provider bookings (bookings made to me as a provider)
+                if (providerData.success && providerData.data) {
+                    // Avoid duplicates by checking if booking already exists
+                    providerData.data.forEach((booking: Booking) => {
+                        if (!allBookings.find((b) => b._id === booking._id)) {
+                            allBookings.push(booking);
+                        }
+                    });
+                }
+
+                setBookings(allBookings);
+            } catch (err) {
+                setError("Failed to load bookings");
+                console.error(err);
+            } finally {
+                setDataLoading(false);
+            }
+        };
+
+        if (user) {
+            fetchBookings();
+        } else {
+            setDataLoading(false);
+        }
+    }, [user]);
 
     // Handle confirm booking (Provider action)
-    const handleConfirm = (id: number) => {
-        setAppointments((prev) =>
-            prev.map((apt) =>
-                apt.id === id ? { ...apt, status: "confirmed" as const } : apt
-            )
-        );
+    const handleConfirm = async (id: string) => {
+        setUpdatingBookingId(id);
+        try {
+            const res = await fetch(`/api/bookings/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "confirmed", isNew: false }),
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                setBookings((prev) =>
+                    prev.map((b) =>
+                        b._id === id ? { ...b, status: "confirmed", isNew: false } : b
+                    )
+                );
+            }
+        } catch (error) {
+            console.error("Error confirming booking:", error);
+        } finally {
+            setUpdatingBookingId(null);
+        }
     };
 
     // Handle cancel booking (Provider action)
-    const handleCancel = (id: number) => {
-        setAppointments((prev) =>
-            prev.map((apt) =>
-                apt.id === id ? { ...apt, status: "cancelled" as const } : apt
-            )
-        );
+    const handleCancel = async (id: string) => {
+        setUpdatingBookingId(id);
+        try {
+            const res = await fetch(`/api/bookings/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "cancelled", isNew: false }),
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                setBookings((prev) =>
+                    prev.map((b) =>
+                        b._id === id ? { ...b, status: "cancelled", isNew: false } : b
+                    )
+                );
+            }
+        } catch (error) {
+            console.error("Error cancelling booking:", error);
+        } finally {
+            setUpdatingBookingId(null);
+        }
     };
 
     // Format date for display
@@ -152,13 +175,28 @@ export default function SchedulePage() {
         }
     };
 
-    if (loading) {
+    if (loading || dataLoading) {
         return (
             <div className="min-h-screen bg-slate-50 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
                     <div className="w-12 h-12 border-4 border-slate-900 border-t-transparent rounded-full animate-spin"></div>
                     <p className="text-slate-600">Loading...</p>
                 </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-slate-50">
+                <Header />
+                <main className="py-16">
+                    <div className="max-w-4xl mx-auto px-4 text-center">
+                        <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg">
+                            {error}
+                        </div>
+                    </div>
+                </main>
             </div>
         );
     }
@@ -189,6 +227,19 @@ export default function SchedulePage() {
     }
 
     const isProvider = user.role === "provider";
+    const formatTime = (time: string) => {
+        if (!time) return "";
+        const [hours, minutes] = time.split(":");
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? "PM" : "AM";
+        const formattedHour = hour % 12 || 12;
+        return `${formattedHour}:${minutes} ${ampm}`;
+    };
+
+    // Sort bookings by date
+    const sortedBookings = [...bookings].sort((a, b) => {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+    });
 
     return (
         <div className="min-h-screen bg-slate-50">
@@ -223,7 +274,7 @@ export default function SchedulePage() {
 
                     {/* Appointments List */}
                     <div className="space-y-4">
-                        {myAppointments.length === 0 ? (
+                        {sortedBookings.length === 0 ? (
                             <div className="text-center py-12 bg-white rounded-xl border border-slate-200">
                                 <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-4" />
                                 <h3 className="text-lg font-semibold text-slate-700 mb-2">
@@ -236,50 +287,83 @@ export default function SchedulePage() {
                                 </p>
                             </div>
                         ) : (
-                            myAppointments.map((appointment) => {
-                                const statusBadge = getStatusBadge(appointment.status);
+                            sortedBookings.map((booking) => {
+                                const statusBadge = getStatusBadge(booking.status);
+                                // Check if this is a booking made TO you (you're the provider)
+                                const isProviderBooking = booking.userId !== user?.id;
+                                // Get provider name from populated data
+                                const providerInfo = booking.providerId as { name?: string; category?: string } | undefined;
 
                                 return (
                                     <div
-                                        key={appointment.id}
-                                        className="bg-white rounded-lg border border-slate-200 p-4 shadow-sm hover:shadow-md transition-shadow"
+                                        key={booking._id}
+                                        className={`bg-white rounded-lg border border-slate-200 p-4 shadow-sm hover:shadow-md transition-shadow ${
+                                            booking.isNew ? "ring-2 ring-yellow-300" : ""
+                                        }`}
                                     >
+                                        {/* Booking Type Badge */}
+                                        <div className="mb-3 flex items-center gap-2 flex-wrap">
+                                            {isProviderBooking ? (
+                                                <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
+                                                    📥 Booking from Client
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
+                                                    📤 Your Booking
+                                                </span>
+                                            )}
+                                            {booking.isNew && (
+                                                <span className="inline-flex items-center gap-1 px-3 py-1 bg-yellow-500 text-white text-xs font-bold rounded-full animate-pulse">
+                                                    ✨ NEW
+                                                </span>
+                                            )}
+                                        </div>
+
                                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                                             {/* Appointment Details */}
                                             <div className="flex-1">
-                                                {/* Title - Different based on role */}
+                                                {/* Title - Different based on whether it's a provider booking */}
                                                 <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                                                    {isProvider ? (
+                                                    {isProviderBooking ? (
                                                         <span className="flex items-center gap-2">
                                                             <User className="w-5 h-5 text-slate-500" />
-                                                            {appointment.clientName}
+                                                            {booking.clientName}
                                                         </span>
                                                     ) : (
                                                         <span className="flex items-center gap-2">
                                                             <Briefcase className="w-5 h-5 text-slate-500" />
-                                                            {appointment.providerName}
+                                                            {providerInfo?.name || "Provider"}
                                                         </span>
                                                     )}
                                                 </h3>
 
-                                                {/* Service */}
-                                                <div className="flex items-center gap-2 text-slate-600 mb-2">
-                                                    <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
-                                                        {appointment.service}
-                                                    </span>
-                                                </div>
+                                                {/* Service/Category */}
+                                                {providerInfo?.category && (
+                                                    <div className="flex items-center gap-2 text-slate-600 mb-2">
+                                                        <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
+                                                            {providerInfo.category}
+                                                        </span>
+                                                    </div>
+                                                )}
 
                                                 {/* Date & Time */}
                                                 <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
                                                     <span className="flex items-center gap-1.5">
                                                         <Calendar className="w-4 h-4" />
-                                                        {formatDate(appointment.date)}
+                                                        {formatDate(booking.date)}
                                                     </span>
                                                     <span className="flex items-center gap-1.5">
                                                         <Clock className="w-4 h-4" />
-                                                        {appointment.time}
+                                                        {formatTime(booking.timeSlot)}
                                                     </span>
                                                 </div>
+
+                                                {/* Notes */}
+                                                {booking.notes && (
+                                                    <p className="text-sm text-slate-500 mt-2">
+                                                        📝 {booking.notes}
+                                                    </p>
+                                                )}
                                             </div>
 
                                             {/* Status & Actions */}
@@ -292,20 +376,22 @@ export default function SchedulePage() {
                                                     {statusBadge.label}
                                                 </span>
 
-                                                {/* Provider Action Buttons (only for pending status) */}
-                                                {isProvider && appointment.status === "pending" && (
+                                                {/* Provider Action Buttons (only for pending status and provider bookings) */}
+                                                {isProviderBooking && booking.status === "pending" && (
                                                     <div className="flex items-center gap-2">
                                                         <button
-                                                            onClick={() => handleConfirm(appointment.id)}
-                                                            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors"
+                                                            onClick={() => handleConfirm(booking._id)}
+                                                            disabled={updatingBookingId === booking._id}
+                                                            className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white text-sm font-semibold rounded-lg transition-colors"
                                                         >
-                                                            Confirm
+                                                            {updatingBookingId === booking._id ? "..." : "Confirm"}
                                                         </button>
                                                         <button
-                                                            onClick={() => handleCancel(appointment.id)}
-                                                            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors"
+                                                            onClick={() => handleCancel(booking._id)}
+                                                            disabled={updatingBookingId === booking._id}
+                                                            className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-300 text-white text-sm font-semibold rounded-lg transition-colors"
                                                         >
-                                                            Cancel
+                                                            {updatingBookingId === booking._id ? "..." : "Cancel"}
                                                         </button>
                                                     </div>
                                                 )}

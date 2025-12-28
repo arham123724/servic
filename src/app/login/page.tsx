@@ -172,7 +172,7 @@ export default function LoginPage() {
                     setLoading(true);
                     setError("");
                     try {
-                      const result = await login("client@demo.com", "123456");
+                      const result = await login("demo_client@servic.com", "password123");
                       if (result.success) {
                         router.push("/");
                       } else {
@@ -195,9 +195,9 @@ export default function LoginPage() {
                     setLoading(true);
                     setError("");
                     try {
-                      const result = await login("provider@demo.com", "123456");
+                      const result = await login("demo_provider@servic.com", "password123");
                       if (result.success) {
-                        router.push("/schedule");
+                        router.push("/provider/schedule");
                       } else {
                         setError(result.error || "Demo login failed. Please try again.");
                       }
