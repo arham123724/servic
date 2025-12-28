@@ -41,6 +41,7 @@ export interface Booking {
   _id: string;
   providerId: string;
   userId: string;
+  providerEmail?: string;
   clientName: string;
   clientEmail: string;
   clientPhone: string;

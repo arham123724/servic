@@ -275,8 +275,8 @@ export default function ProviderSchedulePage() {
                 key={status}
                 onClick={() => setFilter(status as typeof filter)}
                 className={`px-4 py-2 rounded-lg font-semibold transition-all ${filter === status
-                    ? "bg-[#1e3a8a] text-white shadow-md"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800"
+                  ? "bg-[#1e3a8a] text-white shadow-md"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800"
                   }`}
               >
                 {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -304,20 +304,23 @@ export default function ProviderSchedulePage() {
         ) : (
           <div className="space-y-4">
             {sortedBookings.map((booking) => {
-              // Check if this is a booking made TO you (you're the provider)
-              const isProviderBooking = booking.userId !== user?.id;
+              // FIXED: Check if logged-in user is the PROVIDER for this booking
+              // Compare the booking's providerEmail with the logged-in user's email
+              const isProviderForThisBooking =
+                user?.role === "provider" &&
+                booking.providerEmail?.toLowerCase() === user?.email?.toLowerCase();
 
               return (
                 <div
                   key={booking._id}
-                  className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border-l-4 ${isProviderBooking ? "border-l-green-500" : "border-l-blue-500"
+                  className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border-l-4 ${isProviderForThisBooking ? "border-l-green-500" : "border-l-blue-500"
                     } ${booking.isNew ? "ring-2 ring-red-300" : ""}`}
                   onClick={() => booking.isNew && markAsRead(booking._id)}
                 >
                   <div className="p-6">
                     {/* Booking Type Badge and New Badge */}
                     <div className="mb-3 flex items-center gap-2 flex-wrap">
-                      {isProviderBooking ? (
+                      {isProviderForThisBooking ? (
                         <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
                           📥 Booking from Client
                         </span>
@@ -335,7 +338,7 @@ export default function ProviderSchedulePage() {
 
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold ${isProviderBooking ? "bg-green-600" : "bg-[#2563EB]"
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold ${isProviderForThisBooking ? "bg-green-600" : "bg-[#2563EB]"
                           }`}>
                           {booking.clientName.charAt(0).toUpperCase()}
                         </div>
@@ -405,7 +408,7 @@ export default function ProviderSchedulePage() {
                   )}
 
                   {/* Approve/Reject buttons for provider bookings that are pending */}
-                  {isProviderBooking && booking.status === "pending" && (
+                  {isProviderForThisBooking && booking.status === "pending" && (
                     <div className="flex gap-3 pt-4 border-t">
                       <button
                         onClick={() => handleApproveBooking(booking._id)}
