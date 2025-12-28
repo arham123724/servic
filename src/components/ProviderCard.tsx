@@ -16,6 +16,21 @@ const categoryColors: Record<string, string> = {
   Mechanic: "bg-gray-100 text-gray-800",
 };
 
+// Name Polish - Format names professionally
+const formatName = (rawName: string): string => {
+  const lower = rawName.toLowerCase();
+
+  // Specific Overrides (The 'Renaming' Logic)
+  if (lower.includes('shehzad')) return 'Shehzad Khan';
+  if (lower.includes('ali electrician')) return 'Muhammad Ali';
+
+  // Default: Capitalize first letter of each word
+  return rawName
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
 export default function ProviderCard({ provider }: ProviderCardProps) {
   // Helper function to format time (24h to 12h)
   const formatTime = (time: string): string => {
@@ -92,7 +107,7 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-semibold text-slate-800">
-                {provider.name}
+                {formatName(provider.name)}
               </h3>
               {provider.isVerified && (
                 <BadgeCheck className="w-5 h-5 text-[#f59e0b]" />

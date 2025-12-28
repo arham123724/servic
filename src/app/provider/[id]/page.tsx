@@ -21,6 +21,21 @@ import { Provider } from "@/types";
 import { useAuth } from "@/context/AuthContext";
 import { validatePhone, getPhoneError } from "@/lib/validation";
 
+// Name Polish - Format names professionally
+const formatName = (rawName: string): string => {
+  const lower = rawName.toLowerCase();
+
+  // Specific Overrides (The 'Renaming' Logic)
+  if (lower.includes('shehzad')) return 'Shehzad Khan';
+  if (lower.includes('ali electrician')) return 'Muhammad Ali';
+
+  // Default: Capitalize first letter of each word
+  return rawName
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
 export default function ProviderDetailPage() {
   const params = useParams();
   const { user, loading: authLoading } = useAuth();
@@ -336,7 +351,7 @@ export default function ProviderDetailPage() {
                   {/* Name and Verified Badge */}
                   <div className="flex items-center gap-3 mb-3">
                     <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
-                      {provider.name}
+                      {formatName(provider.name)}
                     </h1>
                     {provider.isVerified && (
                       <div className="flex items-center gap-1 bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-semibold border border-emerald-200">
