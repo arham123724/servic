@@ -137,6 +137,18 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
               return "2+ yrs exp";
             };
 
+            // Smart Bio Logic - Professional descriptions based on category
+            const getSmartBio = (): string => {
+              const category = provider.category.toLowerCase();
+              if (category.includes("electrician")) {
+                return "Certified electrician with extensive experience in residential wiring, circuit repairs, and safety inspections. Committed to delivering high-quality and safe electrical solutions.";
+              }
+              if (category.includes("plumber")) {
+                return "Professional plumber specializing in leak detection, pipe fitting, and bathroom installations. Fast, reliable, and efficient service for all your plumbing needs.";
+              }
+              return "Dedicated service professional committed to providing top-tier quality and customer satisfaction.";
+            };
+
             return (
               <div className="flex items-center gap-4 text-sm text-slate-600 mb-3">
                 {/* Rate */}
@@ -162,9 +174,18 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
             </span>
           </div>
 
-          {/* Bio - Always visible with fallback */}
+          {/* Bio - Smart Bio with professional descriptions based on category */}
           <p className="text-slate-600 text-sm line-clamp-2">
-            {provider.bio || `Professional ${provider.category.toLowerCase()} providing quality services in ${provider.location}.`}
+            {(() => {
+              const category = provider.category.toLowerCase();
+              if (category.includes("electrician")) {
+                return "Certified electrician with extensive experience in residential wiring, circuit repairs, and safety inspections. Committed to delivering high-quality and safe electrical solutions.";
+              }
+              if (category.includes("plumber")) {
+                return "Professional plumber specializing in leak detection, pipe fitting, and bathroom installations. Fast, reliable, and efficient service for all your plumbing needs.";
+              }
+              return "Dedicated service professional committed to providing top-tier quality and customer satisfaction.";
+            })()}
           </p>
         </div>
 

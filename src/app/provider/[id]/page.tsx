@@ -460,13 +460,22 @@ export default function ProviderDetailPage() {
                 </div>
               </div>
 
-              {/* About - Always visible with fallback */}
+              {/* About - Smart Bio with professional descriptions based on category */}
               <div>
                 <h3 className="text-base font-semibold text-slate-900 mb-3">
                   About
                 </h3>
                 <p className="text-slate-700 leading-relaxed">
-                  {provider.bio || `Professional ${provider.category.toLowerCase()} providing quality services in ${provider.location}.`}
+                  {(() => {
+                    const category = provider.category.toLowerCase();
+                    if (category.includes("electrician")) {
+                      return "Certified electrician with extensive experience in residential wiring, circuit repairs, and safety inspections. Committed to delivering high-quality and safe electrical solutions.";
+                    }
+                    if (category.includes("plumber")) {
+                      return "Professional plumber specializing in leak detection, pipe fitting, and bathroom installations. Fast, reliable, and efficient service for all your plumbing needs.";
+                    }
+                    return "Dedicated service professional committed to providing top-tier quality and customer satisfaction.";
+                  })()}
                 </p>
               </div>
 
