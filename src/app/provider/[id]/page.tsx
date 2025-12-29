@@ -561,68 +561,70 @@ export default function ProviderDetailPage() {
                 </div>
               </div>
 
-              {/* Today's Availability - Visual Schedule Grid */}
-              <div className="border-t border-slate-200 pt-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-[#1e3a8a]" />
-                    Today&apos;s Availability
-                  </h3>
-                  <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
-                    {new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
-                  </span>
-                </div>
-                {(() => {
-                  const todayDateStr = new Date().toISOString().split("T")[0];
-                  const availableSlotsToday = getAvailableSlots(todayDateStr);
+              {/* Today's Availability - Visual Schedule Grid (Hidden for Providers) */}
+              {(!user || user.role?.toLowerCase() !== 'provider') && (
+                <div className="border-t border-slate-200 pt-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                      <Calendar className="w-5 h-5 text-[#1e3a8a]" />
+                      Today&apos;s Availability
+                    </h3>
+                    <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
+                      {new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
+                    </span>
+                  </div>
+                  {(() => {
+                    const todayDateStr = new Date().toISOString().split("T")[0];
+                    const availableSlotsToday = getAvailableSlots(todayDateStr);
 
-                  if (availableSlotsToday.length === 0) {
+                    if (availableSlotsToday.length === 0) {
+                      return (
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
+                          <p className="text-amber-700 font-medium">No available slots for today</p>
+                          <p className="text-amber-600 text-xs mt-1">Please select a future date to book</p>
+                        </div>
+                      );
+                    }
+
                     return (
-                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
-                        <p className="text-amber-700 font-medium">No available slots for today</p>
-                        <p className="text-amber-600 text-xs mt-1">Please select a future date to book</p>
+                      <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                        {availableSlotsToday.map((slot) => {
+                          const isBooked = bookedSlots.some(
+                            (bookedSlot) =>
+                              new Date(bookedSlot.date).toDateString() === new Date(todayDateStr).toDateString() &&
+                              bookedSlot.timeSlot === slot
+                          );
+                          return (
+                            <div
+                              key={slot}
+                              className={`px-2 py-2 rounded-lg text-center text-xs font-medium transition-all ${isBooked
+                                ? "bg-red-100 text-red-700 border border-red-200"
+                                : "bg-green-100 text-green-700 border border-green-200"
+                                }`}
+                              title={isBooked ? "Booked" : "Available"}
+                            >
+                              <div className="font-semibold">{formatTime(slot).replace(" ", "")}</div>
+                              <div className="text-[10px] mt-0.5 opacity-75">
+                                {isBooked ? "Booked" : "Open"}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     );
-                  }
-
-                  return (
-                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-                      {availableSlotsToday.map((slot) => {
-                        const isBooked = bookedSlots.some(
-                          (bookedSlot) =>
-                            new Date(bookedSlot.date).toDateString() === new Date(todayDateStr).toDateString() &&
-                            bookedSlot.timeSlot === slot
-                        );
-                        return (
-                          <div
-                            key={slot}
-                            className={`px-2 py-2 rounded-lg text-center text-xs font-medium transition-all ${isBooked
-                              ? "bg-red-100 text-red-700 border border-red-200"
-                              : "bg-green-100 text-green-700 border border-green-200"
-                              }`}
-                            title={isBooked ? "Booked" : "Available"}
-                          >
-                            <div className="font-semibold">{formatTime(slot).replace(" ", "")}</div>
-                            <div className="text-[10px] mt-0.5 opacity-75">
-                              {isBooked ? "Booked" : "Open"}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })()}
-                <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
-                  <span className="flex items-center gap-1">
-                    <span className="w-3 h-3 bg-green-100 border border-green-200 rounded"></span>
-                    Available
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <span className="w-3 h-3 bg-red-100 border border-red-200 rounded"></span>
-                    Booked
-                  </span>
+                  })()}
+                  <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
+                    <span className="flex items-center gap-1">
+                      <span className="w-3 h-3 bg-green-100 border border-green-200 rounded"></span>
+                      Available
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className="w-3 h-3 bg-red-100 border border-red-200 rounded"></span>
+                      Booked
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* CTA Buttons - Modern Layout (Hidden for Providers) */}
               {(!user || user.role?.toLowerCase() !== 'provider') && (
