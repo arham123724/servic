@@ -125,7 +125,7 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
   return (
     <>
       <Link href={`/provider/${provider._id}`} className="block h-full">
-        <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 cursor-pointer hover:border-slate-300 h-full flex flex-col">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden border border-slate-200 cursor-pointer hover:border-slate-300 h-full flex flex-col">
           {/* Card Content */}
           <div className="p-5 flex-grow">
             <div className="flex items-start justify-between mb-3">
@@ -180,8 +180,8 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
                 <div className="flex items-center gap-4 text-sm text-slate-600 mb-3">
                   {/* Rate */}
                   <div className="flex items-center gap-1">
-                    <Banknote className="w-4 h-4 text-slate-500" />
-                    <span className="font-semibold">{getSmartRate()}</span>
+                    <Banknote className="w-4 h-4 text-emerald-600" />
+                    <span className="font-bold text-emerald-600">{getSmartRate()}</span>
                   </div>
                   {/* Experience */}
                   <div className="flex items-center gap-1">
@@ -207,18 +207,18 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
             </p>
           </div>
 
-          {/* Action Buttons */}
+          {/* Action Buttons - Outline Style */}
           <div className="flex border-t border-slate-100">
             <button
               onClick={handleCall}
-              className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#1e3a8a] hover:bg-[#1e40af] text-white font-semibold transition-all duration-200 cursor-pointer hover:scale-105 transform"
+              className="flex-1 flex items-center justify-center gap-2 py-4 bg-white border-2 border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50 font-semibold transition-all duration-200 cursor-pointer"
             >
               <Phone className="w-5 h-5" />
               <span>Call</span>
             </button>
             <button
               onClick={handleWhatsApp}
-              className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#25D366] hover:bg-[#1fb855] text-white font-semibold transition-all duration-200 cursor-pointer hover:scale-105 transform"
+              className="flex-1 flex items-center justify-center gap-2 py-4 bg-white border-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10 font-semibold transition-all duration-200 cursor-pointer"
             >
               <MessageCircle className="w-5 h-5" />
               <span>WhatsApp</span>
