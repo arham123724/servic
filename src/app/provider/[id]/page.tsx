@@ -661,10 +661,10 @@ export default function ProviderDetailPage() {
                     <Phone className="w-5 h-5" />
                     Call Now
                   </button>
-                  {/* WhatsApp - Lighter Green */}
+                  {/* WhatsApp - Outline Style */}
                   <button
                     onClick={handleWhatsApp}
-                    className="flex items-center justify-center gap-2 px-6 py-3.5 bg-[#25D366] hover:bg-[#22c55e] text-white font-semibold rounded-lg transition-all cursor-pointer"
+                    className="flex items-center justify-center gap-2 px-6 py-3.5 bg-white border-2 border-[#25D366] hover:bg-green-50 text-[#25D366] font-semibold rounded-lg transition-all cursor-pointer"
                   >
                     <MessageCircle className="w-5 h-5" />
                     WhatsApp
