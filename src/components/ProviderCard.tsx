@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Phone, MessageCircle, MapPin, BadgeCheck, Banknote, Clock } from "lucide-react";
 import { Provider } from "@/types";
+import { useAuth } from "@/context/AuthContext";
 
 interface ProviderCardProps {
   provider: Provider;
@@ -17,6 +19,10 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function ProviderCard({ provider }: ProviderCardProps) {
+  const { user } = useAuth();
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
   // Helper function to format time (24h to 12h)
   const formatTime = (time: string): string => {
     if (!time) return "";
@@ -52,6 +58,15 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
   const handleCall = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // Login Gate
+    if (!user) {
+      setToastMessage("Please log in or sign up to contact! 🔒");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+    }
+
     try {
       // Log the lead first
       await fetch("/api/leads", {
@@ -69,6 +84,15 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
   const handleWhatsApp = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // Login Gate
+    if (!user) {
+      setToastMessage("Please log in or sign up to contact! 🔒");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+    }
+
     try {
       // Log the lead first
       await fetch("/api/leads", {
@@ -79,113 +103,139 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
     } catch (error) {
       console.error("Failed to log lead:", error);
     }
-    // Open WhatsApp (remove + from number for wa.me)
-    const cleanPhone = provider.phone.replace(/\D/g, "");
-    window.open(`https://wa.me/${cleanPhone}`, "_blank");
+
+    // 1. Remove ALL non-numeric characters
+    let cleanPhone = provider.phone.replace(/\D/g, "");
+
+    // 2. Fix Country Code (Pakistan Logic)
+    if (cleanPhone.startsWith("0")) {
+      cleanPhone = "92" + cleanPhone.slice(1);
+    } else if (cleanPhone.length === 10 && !cleanPhone.startsWith("92")) {
+      cleanPhone = "92" + cleanPhone;
+    }
+
+    // 3. Encode Message
+    const message = encodeURIComponent("Hi, I found your profile on Servic. Are you available?");
+
+    // 4. Universal Link
+    const url = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${message}`;
+    window.open(url, "_blank");
   };
 
   return (
-    <Link href={`/provider/${provider._id}`} className="block h-full">
-      <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 cursor-pointer hover:border-slate-300 h-full flex flex-col">
-        {/* Card Content */}
-        <div className="p-5 flex-grow">
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <h3 className="text-lg font-semibold text-slate-800">
-                {provider.name}
-              </h3>
-              {provider.isVerified && (
-                <BadgeCheck className="w-5 h-5 text-[#f59e0b]" />
-              )}
-            </div>
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-medium ${categoryColors[provider.category] || "bg-slate-100 text-slate-800"
-                }`}
-            >
-              {provider.category}
-            </span>
-          </div>
-
-          {/* Location */}
-          <div className="flex items-center gap-1.5 text-slate-500 text-sm mb-3">
-            <MapPin className="w-4 h-4" />
-            <span>{provider.location}</span>
-          </div>
-
-          {/* Quick Stats - Always visible with smart fallbacks */}
-          {(() => {
-            // Smart data lookup based on provider name
-            const getSmartRate = (): string => {
-              if (provider.hourlyRate) return `PKR ${provider.hourlyRate}/hr`;
-              const name = provider.name.toLowerCase();
-              if (name.includes("ahmad")) return "PKR 800/hr";
-              if (name.includes("fatima")) return "PKR 1200/hr";
-              if (name.includes("usman")) return "PKR 600/hr";
-              if (name.includes("shehzad")) return "PKR 750/hr";
-              if (name.includes("ali")) return "PKR 450/hr";
-              return "PKR 500/hr";
-            };
-
-            const getSmartExperience = (): string => {
-              if (provider.experience) return `${provider.experience} yrs exp`;
-              const name = provider.name.toLowerCase();
-              if (name.includes("ahmad")) return "10+ yrs exp";
-              if (name.includes("fatima")) return "4 yrs exp";
-              if (name.includes("usman")) return "12 yrs exp";
-              if (name.includes("shehzad")) return "7 yrs exp";
-              if (name.includes("ali")) return "3 yrs exp";
-              return "2+ yrs exp";
-            };
-
-            return (
-              <div className="flex items-center gap-4 text-sm text-slate-600 mb-3">
-                {/* Rate */}
-                <div className="flex items-center gap-1">
-                  <Banknote className="w-4 h-4 text-slate-500" />
-                  <span className="font-semibold">{getSmartRate()}</span>
-                </div>
-                {/* Experience */}
-                <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4 text-slate-500" />
-                  <span className="font-semibold">{getSmartExperience()}</span>
-                </div>
+    <>
+      <Link href={`/provider/${provider._id}`} className="block h-full">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 cursor-pointer hover:border-slate-300 h-full flex flex-col">
+          {/* Card Content */}
+          <div className="p-5 flex-grow">
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-slate-800">
+                  {provider.name}
+                </h3>
+                {provider.isVerified && (
+                  <BadgeCheck className="w-5 h-5 text-[#f59e0b]" />
+                )}
               </div>
-            );
-          })()}
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-medium ${categoryColors[provider.category] || "bg-slate-100 text-slate-800"
+                  }`}
+              >
+                {provider.category}
+              </span>
+            </div>
 
-          {/* Working Hours */}
-          <div className="flex items-center gap-2 text-sm text-slate-600 mb-3 bg-slate-50 px-3 py-2 rounded-lg">
-            <Clock className="w-4 h-4 text-[#1e3a8a] flex-shrink-0" />
-            <span className="font-medium">{getWorkingHours()}</span>
-            <span className="text-xs text-slate-400 bg-slate-200 px-2 py-0.5 rounded-full">
-              {getWorkingDays()}
-            </span>
+            {/* Location */}
+            <div className="flex items-center gap-1.5 text-slate-500 text-sm mb-3">
+              <MapPin className="w-4 h-4" />
+              <span>{provider.location}</span>
+            </div>
+
+            {/* Quick Stats - Always visible with smart fallbacks */}
+            {(() => {
+              // Smart data lookup based on provider name
+              const getSmartRate = (): string => {
+                if (provider.hourlyRate) return `PKR ${provider.hourlyRate}/hr`;
+                const name = provider.name.toLowerCase();
+                if (name.includes("ahmad")) return "PKR 800/hr";
+                if (name.includes("fatima")) return "PKR 1200/hr";
+                if (name.includes("usman")) return "PKR 600/hr";
+                if (name.includes("shehzad")) return "PKR 750/hr";
+                if (name.includes("ali")) return "PKR 450/hr";
+                return "PKR 500/hr";
+              };
+
+              const getSmartExperience = (): string => {
+                if (provider.experience) return `${provider.experience} yrs exp`;
+                const name = provider.name.toLowerCase();
+                if (name.includes("ahmad")) return "10+ yrs exp";
+                if (name.includes("fatima")) return "4 yrs exp";
+                if (name.includes("usman")) return "12 yrs exp";
+                if (name.includes("shehzad")) return "7 yrs exp";
+                if (name.includes("ali")) return "3 yrs exp";
+                return "2+ yrs exp";
+              };
+
+              return (
+                <div className="flex items-center gap-4 text-sm text-slate-600 mb-3">
+                  {/* Rate */}
+                  <div className="flex items-center gap-1">
+                    <Banknote className="w-4 h-4 text-slate-500" />
+                    <span className="font-semibold">{getSmartRate()}</span>
+                  </div>
+                  {/* Experience */}
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-4 h-4 text-slate-500" />
+                    <span className="font-semibold">{getSmartExperience()}</span>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Working Hours */}
+            <div className="flex items-center gap-2 text-sm text-slate-600 mb-3 bg-slate-50 px-3 py-2 rounded-lg">
+              <Clock className="w-4 h-4 text-[#1e3a8a] flex-shrink-0" />
+              <span className="font-medium">{getWorkingHours()}</span>
+              <span className="text-xs text-slate-400 bg-slate-200 px-2 py-0.5 rounded-full">
+                {getWorkingDays()}
+              </span>
+            </div>
+
+            {/* Bio - Always visible with fallback */}
+            <p className="text-slate-600 text-sm line-clamp-2">
+              {provider.bio || `Professional ${provider.category.toLowerCase()} providing quality services in ${provider.location}.`}
+            </p>
           </div>
 
-          {/* Bio - Always visible with fallback */}
-          <p className="text-slate-600 text-sm line-clamp-2">
-            {provider.bio || `Professional ${provider.category.toLowerCase()} providing quality services in ${provider.location}.`}
-          </p>
+          {/* Action Buttons */}
+          <div className="flex border-t border-slate-100">
+            <button
+              onClick={handleCall}
+              className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#1e3a8a] hover:bg-[#1e40af] text-white font-semibold transition-all duration-200 cursor-pointer hover:scale-105 transform"
+            >
+              <Phone className="w-5 h-5" />
+              <span>Call</span>
+            </button>
+            <button
+              onClick={handleWhatsApp}
+              className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#25D366] hover:bg-[#1fb855] text-white font-semibold transition-all duration-200 cursor-pointer hover:scale-105 transform"
+            >
+              <MessageCircle className="w-5 h-5" />
+              <span>WhatsApp</span>
+            </button>
+          </div>
         </div>
+      </Link>
 
-        {/* Action Buttons */}
-        <div className="flex border-t border-slate-100">
-          <button
-            onClick={handleCall}
-            className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#1e3a8a] hover:bg-[#1e40af] text-white font-semibold transition-all duration-200 cursor-pointer hover:scale-105 transform"
-          >
-            <Phone className="w-5 h-5" />
-            <span>Call</span>
-          </button>
-          <button
-            onClick={handleWhatsApp}
-            className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#25D366] hover:bg-[#1fb855] text-white font-semibold transition-all duration-200 cursor-pointer hover:scale-105 transform"
-          >
-            <MessageCircle className="w-5 h-5" />
-            <span>WhatsApp</span>
-          </button>
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[200] animate-fade-in">
+          <div className="bg-slate-900 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700">
+            <span className="font-medium">{toastMessage}</span>
+          </div>
         </div>
-      </div>
-    </Link>
+      )}
+    </>
   );
 }
+
