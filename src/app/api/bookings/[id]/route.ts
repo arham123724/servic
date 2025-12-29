@@ -6,14 +6,13 @@ import "@/models/User"; // <--- THIS IS THE MAGIC FIX. It prevents the crash!
 // PATCH /api/bookings/[id]
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
 
-    // Check if params is a Promise (Next.js 15 fix) and resolve it
-    // If you are on Next.js 14, this still works safely
-    const resolvedParams = await Promise.resolve(params);
+    // Ensure we await promised params (Next.js route handler context)
+    const resolvedParams = await params;
     const id = resolvedParams.id;
 
     const body = await request.json();
