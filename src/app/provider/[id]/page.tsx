@@ -726,27 +726,55 @@ export default function ProviderDetailPage() {
                                     new Date(bookedSlot.date).toDateString() === new Date(viewDate).toDateString() &&
                                     bookedSlot.timeSlot === slot
                                 );
+
+                                // Helper to check if a slot time has expired (only for today)
+                                const isSlotExpired = (slotTime: string) => {
+                                  // Only check if viewing today
+                                  if (viewDate !== todayStr) return false;
+
+                                  const nowTime = new Date();
+                                  const formattedSlot = formatTime(slotTime); // e.g., "9:30 AM"
+
+                                  // Convert '9:30 AM' to a Date object for today
+                                  const [time, modifier] = formattedSlot.split(' ');
+                                  let [hours, minutes] = time.split(':').map(Number);
+
+                                  if (modifier === 'PM' && hours < 12) hours += 12;
+                                  if (modifier === 'AM' && hours === 12) hours = 0;
+
+                                  const slotDate = new Date();
+                                  slotDate.setHours(hours, minutes, 0, 0);
+
+                                  // Return true if slot is in the past
+                                  return slotDate < nowTime;
+                                };
+
+                                const expired = isSlotExpired(slot);
+                                const isDisabled = isBooked || expired;
+
                                 return (
                                   <button
                                     key={slot}
                                     type="button"
-                                    disabled={isBooked}
-                                    onClick={() => !isBooked && handleSlotClick(slot, viewDate)}
-                                    className={`px-2 py-2 rounded-lg text-center text-xs font-medium transition-all ${isBooked
-                                      ? "bg-red-100 text-red-700 border border-red-200 cursor-not-allowed opacity-60"
-                                      : "bg-green-100 text-green-700 border border-green-200 cursor-pointer hover:shadow-md hover:scale-105 hover:bg-green-200"
+                                    disabled={isDisabled}
+                                    onClick={() => !isDisabled && handleSlotClick(slot, viewDate)}
+                                    className={`px-2 py-2 rounded-lg text-center text-xs font-medium transition-all ${expired
+                                        ? "bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed"
+                                        : isBooked
+                                          ? "bg-red-100 text-red-700 border border-red-200 cursor-not-allowed opacity-60"
+                                          : "bg-green-100 text-green-700 border border-green-200 cursor-pointer hover:shadow-md hover:scale-105 hover:bg-green-200"
                                       }`}
-                                    title={isBooked ? "Booked" : "Click to book this slot"}
+                                    title={expired ? "Expired" : isBooked ? "Booked" : "Click to book this slot"}
                                   >
                                     <div className="font-semibold">{formatTime(slot).replace(" ", "")}</div>
                                     <div className="text-[10px] mt-0.5 opacity-75">
-                                      {isBooked ? "Booked" : "Open"}
+                                      {expired ? "Expired" : isBooked ? "Booked" : "Open"}
                                     </div>
                                   </button>
                                 );
                               })}
                             </div>
-                            <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
+                            <div className="flex items-center gap-4 mt-3 text-xs text-slate-500 flex-wrap">
                               <span className="flex items-center gap-1">
                                 <span className="w-3 h-3 bg-green-100 border border-green-200 rounded"></span>
                                 Available (click to book)
@@ -754,6 +782,10 @@ export default function ProviderDetailPage() {
                               <span className="flex items-center gap-1">
                                 <span className="w-3 h-3 bg-red-100 border border-red-200 rounded"></span>
                                 Booked
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <span className="w-3 h-3 bg-gray-100 border border-gray-200 rounded"></span>
+                                Expired
                               </span>
                             </div>
                           </div>
