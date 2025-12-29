@@ -400,9 +400,7 @@ export default function ProviderDetailPage() {
                     <span className="text-slate-400 text-sm">
                       ({provider.totalReviews && provider.totalReviews > 0
                         ? provider.totalReviews
-                        : (provider.category === 'Tutor' ? '18'
-                          : provider.category === 'Mechanic' ? '9'
-                            : '12')} reviews)
+                        : '2'} reviews)
                     </span>
                   </a>
                 </div>
@@ -933,7 +931,7 @@ export default function ProviderDetailPage() {
                   Carpenter: 4.8,
                 };
                 const avgRating = categoryRatings[provider.category] || 4.7;
-                const reviewCount = (provider.category === "Tutor" ? 18 : provider.category === "Mechanic" ? 9 : 12) + userReviews.length;
+                const reviewCount = allReviews.length;
 
                 // Handle review submission
                 const handleReviewSubmit = () => {
