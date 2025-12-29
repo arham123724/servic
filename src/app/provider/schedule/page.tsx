@@ -335,8 +335,8 @@ export default function ProviderSchedulePage() {
                   </div>
 
                   <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold ${isProviderBooking ? "bg-green-600" : "bg-[#2563EB]"}`}>
+                    <div className="flex items-start gap-3">
+                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold flex-shrink-0 ${isProviderBooking ? "bg-green-600" : "bg-[#2563EB]"}`}>
                         {booking.clientName.charAt(0).toUpperCase()}
                       </div>
                       <div>
@@ -347,6 +347,23 @@ export default function ProviderSchedulePage() {
                           <Calendar className="w-4 h-4" />
                           {formatDate(booking.date)}
                         </div>
+                        {/* Contact Info - Stacked vertically */}
+                        <div className="flex items-center gap-2 text-slate-500 text-sm mt-1">
+                          <Clock className="w-4 h-4 text-slate-400" />
+                          <span>{formatTime(booking.timeSlot)}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-slate-500 text-sm mt-1">
+                          <Mail className="w-4 h-4 text-slate-400" />
+                          <a href={`mailto:${booking.clientEmail}`} className="hover:text-[#1e3a8a] font-medium">
+                            {booking.clientEmail}
+                          </a>
+                        </div>
+                        <div className="flex items-center gap-2 text-slate-500 text-sm mt-1">
+                          <Phone className="w-4 h-4 text-slate-400" />
+                          <a href={`tel:${booking.clientPhone}`} className="hover:text-[#1e3a8a] font-medium">
+                            {booking.clientPhone}
+                          </a>
+                        </div>
                       </div>
                     </div>
                     <span
@@ -355,25 +372,6 @@ export default function ProviderSchedulePage() {
                       {getStatusIcon(booking.status)}
                       {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                     </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <Clock className="w-4 h-4 text-slate-400" />
-                      <span className="text-sm">{formatTime(booking.timeSlot)}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <Phone className="w-4 h-4 text-slate-400" />
-                      <a href={`tel:${booking.clientPhone}`} className="text-sm hover:text-[#1e3a8a] font-medium">
-                        {booking.clientPhone}
-                      </a>
-                    </div>
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <Mail className="w-4 h-4 text-slate-400" />
-                      <a href={`mailto:${booking.clientEmail}`} className="text-sm hover:text-[#1e3a8a] font-medium">
-                        {booking.clientEmail}
-                      </a>
-                    </div>
                   </div>
 
                   {booking.notes && (
