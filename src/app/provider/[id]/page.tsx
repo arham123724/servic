@@ -936,21 +936,19 @@ export default function ProviderDetailPage() {
                 </div>
               )}
 
-              {/* Login prompt - Hidden for Providers (they can't book anyway) */}
+              {/* Login prompt - Professional Design */}
               {!user && (
-                <div className="border-t-2 border-slate-200 pt-6">
-                  <div className="bg-gradient-to-br from-slate-50 to-blue-50 p-6 rounded-xl text-center border-2 border-slate-200 shadow-inner">
-                    <p className="text-slate-800 font-medium text-lg">
-                      <Link href="/login" className="text-[#f59e0b] hover:text-[#d97706] font-bold underline">
-                        Login
-                      </Link>
-                      {" "}or{" "}
-                      <Link href="/signup" className="text-purple-600 hover:text-purple-700 font-bold underline">
-                        Sign up
-                      </Link>
-                      {" "}to book an appointment
-                    </p>
-                  </div>
+                <div className="p-6 bg-slate-50 border border-slate-200 rounded-xl text-center">
+                  <p className="text-slate-600 text-sm">
+                    <Link href="/login" className="text-emerald-600 font-bold hover:underline">
+                      Login
+                    </Link>
+                    <span className="mx-1">or</span>
+                    <Link href="/signup" className="text-emerald-600 font-bold hover:underline">
+                      Sign up
+                    </Link>
+                    <span className="ml-1">to book an appointment</span>
+                  </p>
                 </div>
               )}
 
