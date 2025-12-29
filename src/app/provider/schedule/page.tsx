@@ -29,7 +29,8 @@ export default function ProviderSchedulePage() {
   const [filter, setFilter] = useState<"all" | "pending" | "confirmed" | "completed" | "cancelled">("all");
   const [updatingBookingId, setUpdatingBookingId] = useState<string | null>(null);
 
-  const newBookingsCount = bookings.filter((b) => b.isNew).length;
+  // Count pending bookings (not just isNew)
+  const newBookingsCount = bookings.filter((b) => b.status === 'pending').length;
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -257,8 +258,8 @@ export default function ProviderSchedulePage() {
               My Schedule
             </h1>
             {newBookingsCount > 0 && (
-              <span className="bg-[#f59e0b] text-white text-sm font-bold px-3 py-1 rounded-full animate-pulse shadow-md">
-                {newBookingsCount} New
+              <span className="bg-rose-50 text-rose-600 border border-rose-100 text-xs font-semibold px-2 py-0.5 rounded-full">
+                {newBookingsCount} pending
               </span>
             )}
           </div>
@@ -329,8 +330,8 @@ export default function ProviderSchedulePage() {
                         </span>
                       )}
                       {booking.isNew && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse">
-                          ✨ NEW
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-rose-50 text-rose-600 border border-rose-100 text-xs font-semibold rounded-full">
+                          NEW
                         </span>
                       )}
                     </div>
@@ -363,7 +364,7 @@ export default function ProviderSchedulePage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 px-6">
                     <div className="flex items-center gap-2 text-slate-600">
                       <Clock className="w-4 h-4 text-slate-400" />
                       <span className="text-sm">
@@ -391,7 +392,7 @@ export default function ProviderSchedulePage() {
                   </div>
 
                   {booking.notes && (
-                    <div className="bg-slate-50 rounded-lg p-4 mb-4">
+                    <div className="bg-slate-50 rounded-lg p-4 mb-4 mx-6">
                       <div className="flex items-start gap-2">
                         <FileText className="w-4 h-4 text-slate-400 mt-0.5" />
                         <div>
@@ -408,7 +409,7 @@ export default function ProviderSchedulePage() {
 
                   {/* Approve/Reject buttons for provider bookings that are pending */}
                   {isProviderBooking && booking.status === "pending" && (
-                    <div className="flex gap-3 pt-4 border-t">
+                    <div className="flex gap-3 pt-4 border-t mx-6 pb-6">
                       <button
                         onClick={() => handleApproveBooking(booking._id)}
                         disabled={updatingBookingId === booking._id}

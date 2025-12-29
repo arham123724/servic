@@ -18,8 +18,9 @@ export default function Header() {
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.data) {
-            const newCount = data.data.filter((b: any) => b.isNew).length;
-            setNewBookingsCount(newCount);
+            // Count pending bookings (not just isNew)
+            const pendingCount = data.data.filter((b: any) => b.status === 'pending').length;
+            setNewBookingsCount(pendingCount);
           }
         }
       } catch (error) {
@@ -64,7 +65,7 @@ export default function Header() {
                 <Calendar className="w-4 h-4" />
                 <span className="hidden sm:inline">My Schedule</span>
                 {newBookingsCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[#f59e0b] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center animate-pulse shadow-lg">
+                  <span className="absolute -top-1 -right-1 bg-rose-50 text-rose-600 border border-rose-100 text-xs font-semibold w-5 h-5 rounded-full flex items-center justify-center">
                     {newBookingsCount}
                   </span>
                 )}
