@@ -306,7 +306,7 @@ export default function SchedulePage() {
     const isProvider = user.role === "provider";
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-slate-50 overflow-y-scroll">
             <Header />
 
             <main className="py-8">
