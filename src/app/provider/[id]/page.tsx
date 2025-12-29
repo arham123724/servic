@@ -106,7 +106,7 @@ export default function ProviderDetailPage() {
   };
 
   const handleWhatsApp = async () => {
-    if (!provider) return;
+    if (!provider?.phone) return;
 
     // Track lead
     await fetch("/api/leads", {
@@ -118,15 +118,22 @@ export default function ProviderDetailPage() {
       }),
     });
 
-    // Format phone for Pakistan: convert 0xxx to 92xxx
-    let phone = provider.phone.replace(/[^0-9]/g, "");
-    if (phone.startsWith("0")) {
-      phone = "92" + phone.slice(1);
+    // 1. Remove ALL non-numeric characters (spaces, dashes, +, parentheses)
+    let cleanPhone = provider.phone.replace(/\D/g, '');
+
+    // 2. Fix Country Code (Pakistan Logic)
+    // If it starts with '0', replace it with '92' (e.g., 0300 -> 92300)
+    if (cleanPhone.startsWith('0')) {
+      cleanPhone = '92' + cleanPhone.slice(1);
     }
-    const message = encodeURIComponent(
-      `Hi ${provider.name}, I found you on Servic and I'm interested in your ${provider.category} services.`
-    );
-    window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+    // If it's just a raw number like '3001234567' (missing 0 and 92), add 92
+    else if (cleanPhone.length === 10 && !cleanPhone.startsWith('92')) {
+      cleanPhone = '92' + cleanPhone;
+    }
+
+    // 3. Generate Universal Link (Works on Mobile App AND Desktop Web)
+    const url = `https://wa.me/${cleanPhone}`;
+    window.open(url, '_blank');
   };
 
   const formatTime = (time: string) => {
