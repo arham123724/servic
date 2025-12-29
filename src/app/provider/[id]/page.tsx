@@ -90,6 +90,14 @@ export default function ProviderDetailPage() {
   }, [params.id]);
 
   const handleCall = async () => {
+    // Login Gate
+    if (!user) {
+      setToastMessage("Please log in to contact this provider! 🔒");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+    }
+
     if (!provider) return;
 
     // Track lead
@@ -106,6 +114,14 @@ export default function ProviderDetailPage() {
   };
 
   const handleWhatsApp = async () => {
+    // Login Gate
+    if (!user) {
+      setToastMessage("Please log in to contact this provider! 🔒");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+    }
+
     if (!provider?.phone) return;
 
     // Track lead
@@ -122,17 +138,17 @@ export default function ProviderDetailPage() {
     let cleanPhone = provider.phone.replace(/\D/g, '');
 
     // 2. Fix Country Code (Pakistan Logic)
-    // If it starts with '0', replace it with '92' (e.g., 0300 -> 92300)
     if (cleanPhone.startsWith('0')) {
       cleanPhone = '92' + cleanPhone.slice(1);
-    }
-    // If it's just a raw number like '3001234567' (missing 0 and 92), add 92
-    else if (cleanPhone.length === 10 && !cleanPhone.startsWith('92')) {
+    } else if (cleanPhone.length === 10 && !cleanPhone.startsWith('92')) {
       cleanPhone = '92' + cleanPhone;
     }
 
-    // 3. Generate Universal Link (Works on Mobile App AND Desktop Web)
-    const url = `https://wa.me/${cleanPhone}`;
+    // 3. Encode Message (Works on both Mobile and Desktop)
+    const message = encodeURIComponent("Hi, I found your profile on Servic. Are you available?");
+
+    // 4. Universal Link
+    const url = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${message}`;
     window.open(url, '_blank');
   };
 
@@ -278,6 +294,14 @@ export default function ProviderDetailPage() {
 
   // Helper function to handle clicking on an available time slot
   const handleSlotClick = (slot: string, dateToUse: string) => {
+    // Login Gate
+    if (!user) {
+      setToastMessage("Please log in to book an appointment! 📅");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+    }
+
     setBookingData({ ...bookingData, date: dateToUse, timeSlot: slot });
     setShowBookingForm(true);
   };
