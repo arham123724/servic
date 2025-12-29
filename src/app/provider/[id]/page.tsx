@@ -45,6 +45,23 @@ export default function ProviderDetailPage() {
   // View date state for checking availability
   const [viewDate, setViewDate] = useState(new Date().toISOString().split('T')[0]);
 
+  // Calculate minimum selectable date (tomorrow if past 5 PM)
+  const now = new Date();
+  const currentHour = now.getHours();
+  const todayStr = now.toLocaleDateString('en-CA'); // YYYY-MM-DD
+  let minDate = new Date(now);
+  if (currentHour >= 17) {
+    minDate.setDate(minDate.getDate() + 1);
+  }
+  const minDateStr = minDate.toLocaleDateString('en-CA');
+
+  // Date Guard: If current viewDate is older than allowed minDate, snap to minDate
+  useEffect(() => {
+    if (viewDate < minDateStr) {
+      setViewDate(minDateStr);
+    }
+  }, [minDateStr, viewDate]);
+
   // Review system state
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewRating, setReviewRating] = useState(0);
@@ -668,19 +685,6 @@ export default function ProviderDetailPage() {
                     // Use viewDate state for checking availability
                     const availableSlots = getAvailableSlots(viewDate);
 
-                    // Get current local time
-                    const now = new Date();
-                    const currentHour = now.getHours();
-                    const todayStr = now.toLocaleDateString('en-CA'); // YYYY-MM-DD
-
-                    // Calculate the Minimum Selectable Date for the Input
-                    // If it is past 5:00 PM (17:00), the calendar starts from Tomorrow.
-                    let minDate = new Date(now);
-                    if (currentHour >= 17) {
-                      minDate.setDate(minDate.getDate() + 1);
-                    }
-                    const minDateStr = minDate.toLocaleDateString('en-CA');
-
                     // Check if the currently selected view is 'Closed'
                     // (User is viewing Today AND it is past 5 PM)
                     const isBusinessHoursOver = (viewDate === todayStr) && (currentHour >= 17);
@@ -759,10 +763,10 @@ export default function ProviderDetailPage() {
                                     disabled={isDisabled}
                                     onClick={() => !isDisabled && handleSlotClick(slot, viewDate)}
                                     className={`px-2 py-2 rounded-lg text-center text-xs font-medium transition-all ${expired
-                                        ? "bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed"
-                                        : isBooked
-                                          ? "bg-red-100 text-red-700 border border-red-200 cursor-not-allowed opacity-60"
-                                          : "bg-green-100 text-green-700 border border-green-200 cursor-pointer hover:shadow-md hover:scale-105 hover:bg-green-200"
+                                      ? "bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed"
+                                      : isBooked
+                                        ? "bg-red-100 text-red-700 border border-red-200 cursor-not-allowed opacity-60"
+                                        : "bg-green-100 text-green-700 border border-green-200 cursor-pointer hover:shadow-md hover:scale-105 hover:bg-green-200"
                                       }`}
                                     title={expired ? "Expired" : isBooked ? "Booked" : "Click to book this slot"}
                                   >
