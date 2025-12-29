@@ -668,6 +668,23 @@ export default function ProviderDetailPage() {
                     // Use viewDate state for checking availability
                     const availableSlots = getAvailableSlots(viewDate);
 
+                    // Get current local time
+                    const now = new Date();
+                    const currentHour = now.getHours();
+                    const todayStr = now.toLocaleDateString('en-CA'); // YYYY-MM-DD
+
+                    // Calculate the Minimum Selectable Date for the Input
+                    // If it is past 5:00 PM (17:00), the calendar starts from Tomorrow.
+                    let minDate = new Date(now);
+                    if (currentHour >= 17) {
+                      minDate.setDate(minDate.getDate() + 1);
+                    }
+                    const minDateStr = minDate.toLocaleDateString('en-CA');
+
+                    // Check if the currently selected view is 'Closed'
+                    // (User is viewing Today AND it is past 5 PM)
+                    const isBusinessHoursOver = (viewDate === todayStr) && (currentHour >= 17);
+
                     return (
                       <>
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
@@ -679,7 +696,7 @@ export default function ProviderDetailPage() {
                             <input
                               type="date"
                               value={viewDate}
-                              min={new Date().toISOString().split('T')[0]}
+                              min={minDateStr}
                               onChange={(e) => setViewDate(e.target.value)}
                               className="px-3 py-1.5 text-sm rounded-lg border border-slate-300 bg-white text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer"
                             />
@@ -689,7 +706,18 @@ export default function ProviderDetailPage() {
                           </div>
                         </div>
 
-                        {availableSlots.length > 0 ? (
+                        {isBusinessHoursOver ? (
+                          <div className="col-span-full py-12 px-6 bg-slate-50 border border-slate-200 rounded-xl text-center flex flex-col items-center justify-center">
+                            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
+                              <span className="text-2xl">🌙</span>
+                            </div>
+                            <h3 className="text-slate-800 font-bold text-lg mb-2">Bookings Closed for Today</h3>
+                            <p className="text-slate-500 text-sm max-w-md mx-auto">
+                              Our appointment hours (9:00 AM - 5:00 PM) have ended for the day.
+                              Please select a future date from the calendar to view available slots.
+                            </p>
+                          </div>
+                        ) : availableSlots.length > 0 ? (
                           <div>
                             <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
                               {availableSlots.map((slot) => {
