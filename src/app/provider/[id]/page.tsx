@@ -666,161 +666,163 @@ export default function ProviderDetailPage() {
                 </div>
               )}
 
-              {/* Booking Form - Clean Modal Layout (Hidden for Providers) */}
+              {/* Booking Form - Centered Popup Modal (Hidden for Providers) */}
               {showBookingForm && user && user.role?.toLowerCase() !== 'provider' && (
-                <div className="border-t border-slate-200 pt-6 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                  {/* Clean Header */}
-                  <h3 className="text-xl font-bold text-slate-900 mb-1">
-                    Schedule an Appointment
-                  </h3>
-                  <p className="text-slate-500 text-sm mb-6">
-                    Book a time slot that works best for you
-                  </p>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                  <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+                    {/* Clean Header */}
+                    <h3 className="text-xl font-bold text-slate-900 mb-1">
+                      Schedule an Appointment
+                    </h3>
+                    <p className="text-slate-500 text-sm mb-6">
+                      Book a time slot that works best for you
+                    </p>
 
-                  {bookingSuccess ? (
-                    <div className="bg-green-50 border border-green-200 text-green-800 px-5 py-4 rounded-lg mb-4">
-                      <p className="font-semibold">Booking successful! 🎉</p>
-                      <p className="text-sm mt-1 text-green-700">The provider will contact you shortly to confirm.</p>
-                    </div>
-                  ) : (
-                    <form onSubmit={handleBookingSubmit} className="space-y-5">
-                      {bookingError && (
-                        <div className="bg-red-50 border border-red-200 text-red-700 px-5 py-3 rounded-lg">
-                          <p className="font-medium text-sm">{bookingError}</p>
+                    {bookingSuccess ? (
+                      <div className="bg-green-50 border border-green-200 text-green-800 px-5 py-4 rounded-lg mb-4">
+                        <p className="font-semibold">Booking successful! 🎉</p>
+                        <p className="text-sm mt-1 text-green-700">The provider will contact you shortly to confirm.</p>
+                      </div>
+                    ) : (
+                      <form onSubmit={handleBookingSubmit} className="space-y-5">
+                        {bookingError && (
+                          <div className="bg-red-50 border border-red-200 text-red-700 px-5 py-3 rounded-lg">
+                            <p className="font-medium text-sm">{bookingError}</p>
+                          </div>
+                        )}
+
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">
+                            Select Date
+                          </label>
+                          <input
+                            type="date"
+                            required
+                            min={new Date().toISOString().split("T")[0]}
+                            value={bookingData.date}
+                            onChange={(e) =>
+                              setBookingData({ ...bookingData, date: e.target.value })
+                            }
+                            className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition-colors"
+                          />
                         </div>
-                      )}
 
-                      <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                          Select Date
-                        </label>
-                        <input
-                          type="date"
-                          required
-                          min={new Date().toISOString().split("T")[0]}
-                          value={bookingData.date}
-                          onChange={(e) =>
-                            setBookingData({ ...bookingData, date: e.target.value })
-                          }
-                          className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition-colors"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                          Select Time Slot
-                        </label>
-                        <select
-                          required
-                          value={bookingData.timeSlot}
-                          onChange={(e) =>
-                            setBookingData({ ...bookingData, timeSlot: e.target.value })
-                          }
-                          className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 cursor-pointer transition-colors"
-                        >
-                          <option value="" className="text-slate-500">Choose a time</option>
-                          {(() => {
-                            const allSlots = generateTimeSlots();
-                            const availableSlots = getAvailableSlots(bookingData.date);
-
-                            // If no date selected, show all slots
-                            if (!bookingData.date) {
-                              return allSlots.map((slot) => (
-                                <option key={slot} value={slot}>
-                                  {formatTime(slot)}
-                                </option>
-                              ));
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">
+                            Select Time Slot
+                          </label>
+                          <select
+                            required
+                            value={bookingData.timeSlot}
+                            onChange={(e) =>
+                              setBookingData({ ...bookingData, timeSlot: e.target.value })
                             }
+                            className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 cursor-pointer transition-colors"
+                          >
+                            <option value="" className="text-slate-500">Choose a time</option>
+                            {(() => {
+                              const allSlots = generateTimeSlots();
+                              const availableSlots = getAvailableSlots(bookingData.date);
 
-                            if (availableSlots.length === 0) {
-                              return (
-                                <option disabled>No slots available for this date</option>
-                              );
+                              // If no date selected, show all slots
+                              if (!bookingData.date) {
+                                return allSlots.map((slot) => (
+                                  <option key={slot} value={slot}>
+                                    {formatTime(slot)}
+                                  </option>
+                                ));
+                              }
+
+                              if (availableSlots.length === 0) {
+                                return (
+                                  <option disabled>No slots available for this date</option>
+                                );
+                              }
+
+                              return availableSlots.map((slot) => {
+                                const booked = isSlotBooked(slot);
+                                return (
+                                  <option
+                                    key={slot}
+                                    value={slot}
+                                    disabled={booked}
+                                    className={booked ? "text-slate-400 bg-slate-100" : "text-slate-900"}
+                                  >
+                                    {formatTime(slot)} {booked ? "🔒 Booked" : "✅ Available"}
+                                  </option>
+                                );
+                              });
+                            })()}
+                          </select>
+                          {bookingData.date && getAvailableSlots(bookingData.date).length === 0 && (
+                            <p className="text-xs text-amber-600 mt-2 font-medium">
+                              No available slots for this date. Please select a future date.
+                            </p>
+                          )}
+                          {bookingData.date && getAvailableSlots(bookingData.date).length > 0 && (
+                            <p className="text-xs text-slate-500 mt-2">
+                              🔒 = Already booked | ✅ = Available for booking
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">
+                            Your Phone Number
+                          </label>
+                          <input
+                            type="tel"
+                            required
+                            placeholder="+92 300 1234567"
+                            value={bookingData.clientPhone}
+                            onChange={(e) =>
+                              setBookingData({ ...bookingData, clientPhone: e.target.value })
                             }
+                            className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition-colors"
+                          />
+                        </div>
 
-                            return availableSlots.map((slot) => {
-                              const booked = isSlotBooked(slot);
-                              return (
-                                <option
-                                  key={slot}
-                                  value={slot}
-                                  disabled={booked}
-                                  className={booked ? "text-slate-400 bg-slate-100" : "text-slate-900"}
-                                >
-                                  {formatTime(slot)} {booked ? "🔒 Booked" : "✅ Available"}
-                                </option>
-                              );
-                            });
-                          })()}
-                        </select>
-                        {bookingData.date && getAvailableSlots(bookingData.date).length === 0 && (
-                          <p className="text-xs text-amber-600 mt-2 font-medium">
-                            No available slots for this date. Please select a future date.
-                          </p>
-                        )}
-                        {bookingData.date && getAvailableSlots(bookingData.date).length > 0 && (
-                          <p className="text-xs text-slate-500 mt-2">
-                            🔒 = Already booked | ✅ = Available for booking
-                          </p>
-                        )}
-                      </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">
+                            Additional Notes <span className="text-slate-400 font-normal">(Optional)</span>
+                          </label>
+                          <textarea
+                            rows={3}
+                            placeholder="Describe your requirements..."
+                            value={bookingData.notes}
+                            onChange={(e) =>
+                              setBookingData({ ...bookingData, notes: e.target.value })
+                            }
+                            className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 resize-none transition-colors"
+                          />
+                        </div>
 
-                      <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                          Your Phone Number
-                        </label>
-                        <input
-                          type="tel"
-                          required
-                          placeholder="+92 300 1234567"
-                          value={bookingData.clientPhone}
-                          onChange={(e) =>
-                            setBookingData({ ...bookingData, clientPhone: e.target.value })
-                          }
-                          className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition-colors"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                          Additional Notes <span className="text-slate-400 font-normal">(Optional)</span>
-                        </label>
-                        <textarea
-                          rows={3}
-                          placeholder="Describe your requirements..."
-                          value={bookingData.notes}
-                          onChange={(e) =>
-                            setBookingData({ ...bookingData, notes: e.target.value })
-                          }
-                          className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 resize-none transition-colors"
-                        />
-                      </div>
-
-                      {/* Footer Actions - Side by Side */}
-                      <div className="flex gap-3 pt-2">
-                        {/* Cancel - Ghost Button */}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setShowBookingForm(false);
-                            setBookingData({ date: "", timeSlot: "", clientPhone: "", notes: "" });
-                            setBookingError("");
-                          }}
-                          className="flex-1 px-6 py-3 text-slate-600 hover:text-slate-800 hover:bg-slate-100 font-semibold rounded-lg transition-all border border-slate-200"
-                        >
-                          Cancel
-                        </button>
-                        {/* Confirm - Primary Navy Button */}
-                        <button
-                          type="submit"
-                          disabled={bookingLoading}
-                          className="flex-1 px-6 py-3 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all"
-                        >
-                          {bookingLoading ? "Booking..." : "Confirm Booking"}
-                        </button>
-                      </div>
-                    </form>
-                  )}
+                        {/* Footer Actions - Side by Side */}
+                        <div className="flex gap-3 pt-2">
+                          {/* Cancel - Ghost Button */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowBookingForm(false);
+                              setBookingData({ date: "", timeSlot: "", clientPhone: "", notes: "" });
+                              setBookingError("");
+                            }}
+                            className="flex-1 px-6 py-3 text-slate-600 hover:text-slate-800 hover:bg-slate-100 font-semibold rounded-lg transition-all border border-slate-200"
+                          >
+                            Cancel
+                          </button>
+                          {/* Confirm - Primary Navy Button */}
+                          <button
+                            type="submit"
+                            disabled={bookingLoading}
+                            className="flex-1 px-6 py-3 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all"
+                          >
+                            {bookingLoading ? "Booking..." : "Confirm Booking"}
+                          </button>
+                        </div>
+                      </form>
+                    )}
+                  </div>
                 </div>
               )}
 
