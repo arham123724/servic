@@ -314,7 +314,7 @@ export default function ProviderDetailPage() {
           {/* Back Link */}
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-slate-600 hover:text-[#1e3a8a] mb-6 transition-colors font-medium"
+            className="text-[#1e3a8a] hover:text-[#1e40af] flex items-center font-bold transition-colors mb-6 gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Search

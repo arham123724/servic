@@ -244,9 +244,9 @@ export default function ProviderSchedulePage() {
 
         {/* ADDED BACK BUTTON HERE */}
         <div className="mb-6">
-          <Link href="/" className="flex items-center text-gray-600 hover:text-blue-600 transition-colors w-fit">
+          <Link href="/" className="text-[#1e3a8a] hover:text-[#1e40af] flex items-center font-bold transition-colors">
             <ArrowLeft className="w-5 h-5 mr-2" />
-            <span className="font-medium">Back to Home</span>
+            <span>Back to Home</span>
           </Link>
         </div>
 
