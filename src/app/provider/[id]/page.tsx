@@ -302,6 +302,49 @@ export default function ProviderDetailPage() {
     );
   }
 
+  // ============================================
+  // SHARED REVIEW LOGIC (used by Header AND Reviews Section)
+  // ============================================
+  const categoryReviews: Record<string, { name: string; stars: number; text: string; time: string }[]> = {
+    Electrician: [
+      { name: "Ali Khan", stars: 5, text: "Excellent work! Fixed all the wiring issues in my house. Very professional and knew exactly what he was doing.", time: "2 days ago" },
+      { name: "Sara Ahmed", stars: 4, text: "Installed new lights and fans quickly. Good communication and fair pricing.", time: "1 week ago" },
+    ],
+    Plumber: [
+      { name: "Hassan Raza", stars: 5, text: "Fixed a major leak under the kitchen sink. Arrived on time and cleaned up after the job. Highly recommend!", time: "3 days ago" },
+      { name: "Fatima Bibi", stars: 4, text: "Replaced old pipes and fixed the taps. Professional behavior and reasonable rates.", time: "5 days ago" },
+    ],
+    Tutor: [
+      { name: "Ayesha Malik", stars: 5, text: "My son's math grades improved from C to A in just two months! Excellent teaching style and very patient.", time: "1 week ago" },
+      { name: "Ahmed Nawaz", stars: 5, text: "Great tutor for O-Levels Physics. Explains concepts clearly and provides helpful practice materials.", time: "2 weeks ago" },
+    ],
+    Mechanic: [
+      { name: "Bilal Shah", stars: 5, text: "Did a complete engine tune-up and oil change. My car runs like new now. Very knowledgeable mechanic!", time: "4 days ago" },
+      { name: "Usman Ali", stars: 4, text: "Fixed the brakes and checked the suspension. Honest about pricing and quick service.", time: "1 week ago" },
+    ],
+    Carpenter: [
+      { name: "Zainab Fatima", stars: 5, text: "Made beautiful custom cabinets for my kitchen. Attention to detail is amazing! Very skilled craftsman.", time: "3 days ago" },
+      { name: "Imran Khan", stars: 4, text: "Repaired old furniture and it looks brand new. Good quality work and fair pricing.", time: "6 days ago" },
+    ],
+  };
+
+  const baseReviews = categoryReviews[provider.category] || [
+    { name: "Muhammad Hassan", stars: 5, text: "Very professional and punctual. Did excellent work and was very thorough with the job.", time: "2 days ago" },
+    { name: "Aisha Begum", stars: 4, text: "Good service overall. Would recommend to others looking for quality work.", time: "1 week ago" },
+  ];
+
+  const allReviews = [...userReviews, ...baseReviews];
+  const displayCount = allReviews.length;
+  const displayRating = provider.rating && provider.rating > 0
+    ? provider.rating.toFixed(1)
+    : (provider.category === 'Electrician' ? '4.8'
+      : provider.category === 'Tutor' ? '4.9'
+        : provider.category === 'Plumber' ? '4.7'
+          : provider.category === 'Mechanic' ? '4.6'
+            : provider.category === 'Carpenter' ? '4.8'
+              : '4.7');
+  // ============================================
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
@@ -386,21 +429,10 @@ export default function ProviderDetailPage() {
                   <a href="#reviews" className="flex items-center gap-2 hover:opacity-75 transition-opacity w-fit">
                     <div className="flex items-center gap-1">
                       <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
-                      <span className="font-semibold text-slate-900">
-                        {provider.rating && provider.rating > 0
-                          ? provider.rating.toFixed(1)
-                          : (provider.category === 'Electrician' ? '4.8'
-                            : provider.category === 'Tutor' ? '4.9'
-                              : provider.category === 'Plumber' ? '4.7'
-                                : provider.category === 'Mechanic' ? '4.6'
-                                  : provider.category === 'Carpenter' ? '4.8'
-                                    : '4.7')}
-                      </span>
+                      <span className="font-semibold text-slate-900">{displayRating}</span>
                     </div>
                     <span className="text-slate-400 text-sm">
-                      ({provider.totalReviews && provider.totalReviews > 0
-                        ? provider.totalReviews
-                        : '2'} reviews)
+                      ({displayCount} reviews)
                     </span>
                   </a>
                 </div>
@@ -887,50 +919,10 @@ export default function ProviderDetailPage() {
                 </div>
               )}
 
-              {/* Customer Reviews Section - Category Aware with Interactive Modal */}
+              {/* Customer Reviews Section - Uses Shared Review Logic */}
               {(() => {
-                // Category-specific mock reviews
-                const categoryReviews: Record<string, { name: string; stars: number; text: string; time: string }[]> = {
-                  Electrician: [
-                    { name: "Ali Khan", stars: 5, text: "Excellent work! Fixed all the wiring issues in my house. Very professional and knew exactly what he was doing.", time: "2 days ago" },
-                    { name: "Sara Ahmed", stars: 4, text: "Installed new lights and fans quickly. Good communication and fair pricing.", time: "1 week ago" },
-                  ],
-                  Plumber: [
-                    { name: "Hassan Raza", stars: 5, text: "Fixed a major leak under the kitchen sink. Arrived on time and cleaned up after the job. Highly recommend!", time: "3 days ago" },
-                    { name: "Fatima Bibi", stars: 4, text: "Replaced old pipes and fixed the taps. Professional behavior and reasonable rates.", time: "5 days ago" },
-                  ],
-                  Tutor: [
-                    { name: "Ayesha Malik", stars: 5, text: "My son's math grades improved from C to A in just two months! Excellent teaching style and very patient.", time: "1 week ago" },
-                    { name: "Ahmed Nawaz", stars: 5, text: "Great tutor for O-Levels Physics. Explains concepts clearly and provides helpful practice materials.", time: "2 weeks ago" },
-                  ],
-                  Mechanic: [
-                    { name: "Bilal Shah", stars: 5, text: "Did a complete engine tune-up and oil change. My car runs like new now. Very knowledgeable mechanic!", time: "4 days ago" },
-                    { name: "Usman Ali", stars: 4, text: "Fixed the brakes and checked the suspension. Honest about pricing and quick service.", time: "1 week ago" },
-                  ],
-                  Carpenter: [
-                    { name: "Zainab Fatima", stars: 5, text: "Made beautiful custom cabinets for my kitchen. Attention to detail is amazing! Very skilled craftsman.", time: "3 days ago" },
-                    { name: "Imran Khan", stars: 4, text: "Repaired old furniture and it looks brand new. Good quality work and fair pricing.", time: "6 days ago" },
-                  ],
-                };
-
-                // Get reviews based on category, with default fallback
-                const baseReviews = categoryReviews[provider.category] || [
-                  { name: "Muhammad Hassan", stars: 5, text: "Very professional and punctual. Did excellent work and was very thorough with the job.", time: "2 days ago" },
-                  { name: "Aisha Begum", stars: 4, text: "Good service overall. Would recommend to others looking for quality work.", time: "1 week ago" },
-                ];
-
-                // Combine user reviews with base reviews
-                const allReviews = [...userReviews, ...baseReviews];
-
-                // Calculate average rating (slightly randomized per category)
-                const categoryRatings: Record<string, number> = {
-                  Electrician: 4.8,
-                  Plumber: 4.7,
-                  Tutor: 4.9,
-                  Mechanic: 4.6,
-                  Carpenter: 4.8,
-                };
-                const avgRating = categoryRatings[provider.category] || 4.7;
+                // Use shared allReviews and displayCount from component body
+                const avgRating = displayRating;
                 const reviewCount = allReviews.length;
 
                 // Handle review submission
@@ -1050,7 +1042,7 @@ export default function ProviderDetailPage() {
                           {[1, 2, 3, 4, 5].map((star) => (
                             <Star
                               key={star}
-                              className={`w-5 h-5 ${star <= Math.round(avgRating) ? "text-yellow-400 fill-yellow-400" : "text-slate-300"}`}
+                              className={`w-5 h-5 ${star <= Math.round(parseFloat(avgRating)) ? "text-yellow-400 fill-yellow-400" : "text-slate-300"}`}
                             />
                           ))}
                         </div>
