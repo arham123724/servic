@@ -313,95 +313,76 @@ export default function ProviderSchedulePage() {
               return (
                 <div
                   key={booking._id}
-                  className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border-l-4 ${isProviderBooking ? "border-l-green-500" : "border-l-blue-500"
-                    } ${booking.isNew ? "ring-2 ring-red-300" : ""}`}
+                  className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-slate-200 p-6 ${booking.isNew ? "ring-2 ring-rose-200" : ""}`}
                   onClick={() => booking.isNew && markAsRead(booking._id)}
                 >
-                  <div className="p-6">
-                    {/* Booking Type Badge and New Badge */}
-                    <div className="mb-3 flex items-center gap-2 flex-wrap">
-                      {isProviderBooking ? (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
-                          📥 Booking from Client
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
-                          📤 Your Booking
-                        </span>
-                      )}
-                      {booking.isNew && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-rose-50 text-rose-600 border border-rose-100 text-xs font-semibold rounded-full">
-                          NEW
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold ${isProviderBooking ? "bg-green-600" : "bg-[#2563EB]"
-                          }`}>
-                          {booking.clientName.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <h3 className="text-lg font-semibold text-slate-800">
-                            {booking.clientName}
-                          </h3>
-                          <div className="flex items-center gap-2 text-sm text-slate-500">
-                            <Calendar className="w-4 h-4" />
-                            {formatDate(booking.date)}
-                          </div>
-                        </div>
-                      </div>
-                      <span
-                        className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(
-                          booking.status
-                        )}`}
-                      >
-                        {getStatusIcon(booking.status)}
-                        {booking.status.charAt(0).toUpperCase() +
-                          booking.status.slice(1)}
+                  {/* Booking Type Badge and New Badge */}
+                  <div className="mb-3 flex items-center gap-2 flex-wrap">
+                    {isProviderBooking ? (
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
+                        📥 Booking from Client
                       </span>
-                    </div>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
+                        📤 Your Booking
+                      </span>
+                    )}
+                    {booking.isNew && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-rose-50 text-rose-600 border border-rose-100 text-xs font-semibold rounded-full">
+                        NEW
+                      </span>
+                    )}
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 px-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold ${isProviderBooking ? "bg-green-600" : "bg-[#2563EB]"}`}>
+                        {booking.clientName.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-800">
+                          {booking.clientName}
+                        </h3>
+                        <div className="flex items-center gap-2 text-sm text-slate-500">
+                          <Calendar className="w-4 h-4" />
+                          {formatDate(booking.date)}
+                        </div>
+                      </div>
+                    </div>
+                    <span
+                      className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(booking.status)}`}
+                    >
+                      {getStatusIcon(booking.status)}
+                      {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div className="flex items-center gap-2 text-slate-600">
                       <Clock className="w-4 h-4 text-slate-400" />
-                      <span className="text-sm">
-                        {formatTime(booking.timeSlot)}
-                      </span>
+                      <span className="text-sm">{formatTime(booking.timeSlot)}</span>
                     </div>
                     <div className="flex items-center gap-2 text-slate-600">
                       <Phone className="w-4 h-4 text-slate-400" />
-                      <a
-                        href={`tel:${booking.clientPhone}`}
-                        className="text-sm hover:text-[#1e3a8a] font-medium"
-                      >
+                      <a href={`tel:${booking.clientPhone}`} className="text-sm hover:text-[#1e3a8a] font-medium">
                         {booking.clientPhone}
                       </a>
                     </div>
                     <div className="flex items-center gap-2 text-slate-600">
                       <Mail className="w-4 h-4 text-slate-400" />
-                      <a
-                        href={`mailto:${booking.clientEmail}`}
-                        className="text-sm hover:text-[#1e3a8a] font-medium"
-                      >
+                      <a href={`mailto:${booking.clientEmail}`} className="text-sm hover:text-[#1e3a8a] font-medium">
                         {booking.clientEmail}
                       </a>
                     </div>
                   </div>
 
                   {booking.notes && (
-                    <div className="bg-slate-50 rounded-lg p-4 mb-4 mx-6">
+                    <div className="bg-slate-50 rounded-lg p-4 mb-4">
                       <div className="flex items-start gap-2">
                         <FileText className="w-4 h-4 text-slate-400 mt-0.5" />
                         <div>
-                          <p className="text-sm font-medium text-slate-700 mb-1">
-                            Notes:
-                          </p>
-                          <p className="text-sm text-slate-600">
-                            {booking.notes}
-                          </p>
+                          <p className="text-sm font-medium text-slate-700 mb-1">Notes:</p>
+                          <p className="text-sm text-slate-600">{booking.notes}</p>
                         </div>
                       </div>
                     </div>
@@ -409,11 +390,11 @@ export default function ProviderSchedulePage() {
 
                   {/* Approve/Reject buttons for provider bookings that are pending */}
                   {isProviderBooking && booking.status === "pending" && (
-                    <div className="flex gap-3 pt-4 border-t mx-6 pb-6">
+                    <div className="flex gap-3 pt-4 border-t">
                       <button
                         onClick={() => handleApproveBooking(booking._id)}
                         disabled={updatingBookingId === booking._id}
-                        className="flex-1 bg-[#10b981] hover:bg-[#059669] disabled:bg-slate-300 text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                        className="flex-1 bg-[#10b981] hover:bg-[#059669] disabled:bg-slate-300 text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
                       >
                         <CheckCircle className="w-4 h-4" />
                         {updatingBookingId === booking._id ? "Approving..." : "Approve"}
@@ -421,7 +402,7 @@ export default function ProviderSchedulePage() {
                       <button
                         onClick={() => handleRejectBooking(booking._id)}
                         disabled={updatingBookingId === booking._id}
-                        className="flex-1 bg-[#ef4444] hover:bg-[#dc2626] disabled:bg-slate-300 text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105"
+                        className="flex-1 bg-[#ef4444] hover:bg-[#dc2626] disabled:bg-slate-300 text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
                       >
                         <XCircle className="w-4 h-4" />
                         {updatingBookingId === booking._id ? "Rejecting..." : "Reject"}
