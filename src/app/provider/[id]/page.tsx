@@ -118,7 +118,11 @@ export default function ProviderDetailPage() {
       }),
     });
 
-    const phone = provider.phone.replace(/[^0-9]/g, "");
+    // Format phone for Pakistan: convert 0xxx to 92xxx
+    let phone = provider.phone.replace(/[^0-9]/g, "");
+    if (phone.startsWith("0")) {
+      phone = "92" + phone.slice(1);
+    }
     const message = encodeURIComponent(
       `Hi ${provider.name}, I found you on Servic and I'm interested in your ${provider.category} services.`
     );
