@@ -624,28 +624,30 @@ export default function ProviderDetailPage() {
                 </div>
               </div>
 
-              {/* CTA Buttons - Modern Layout */}
-              <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-200">
-                {/* Call - Outline Style */}
-                <button
-                  onClick={handleCall}
-                  className="flex items-center justify-center gap-2 px-6 py-3.5 bg-white border-2 border-slate-300 hover:border-slate-400 text-slate-900 font-semibold rounded-lg transition-all hover:bg-slate-50 cursor-pointer"
-                >
-                  <Phone className="w-5 h-5" />
-                  Call Now
-                </button>
-                {/* WhatsApp - Lighter Green */}
-                <button
-                  onClick={handleWhatsApp}
-                  className="flex items-center justify-center gap-2 px-6 py-3.5 bg-[#25D366] hover:bg-[#22c55e] text-white font-semibold rounded-lg transition-all cursor-pointer"
-                >
-                  <MessageCircle className="w-5 h-5" />
-                  WhatsApp
-                </button>
-              </div>
+              {/* CTA Buttons - Modern Layout (Hidden for Providers) */}
+              {(!user || user.role?.toLowerCase() !== 'provider') && (
+                <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-200">
+                  {/* Call - Outline Style */}
+                  <button
+                    onClick={handleCall}
+                    className="flex items-center justify-center gap-2 px-6 py-3.5 bg-white border-2 border-slate-300 hover:border-slate-400 text-slate-900 font-semibold rounded-lg transition-all hover:bg-slate-50 cursor-pointer"
+                  >
+                    <Phone className="w-5 h-5" />
+                    Call Now
+                  </button>
+                  {/* WhatsApp - Lighter Green */}
+                  <button
+                    onClick={handleWhatsApp}
+                    className="flex items-center justify-center gap-2 px-6 py-3.5 bg-[#25D366] hover:bg-[#22c55e] text-white font-semibold rounded-lg transition-all cursor-pointer"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                    WhatsApp
+                  </button>
+                </div>
+              )}
 
-              {/* Book Appointment Button - Sticky on mobile, normal on desktop */}
-              {user && !showBookingForm && (
+              {/* Book Appointment Button - Sticky on mobile, normal on desktop (Hidden for Providers) */}
+              {user && user.role?.toLowerCase() !== 'provider' && !showBookingForm && (
                 <div className="fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 p-4 z-50 md:static md:w-auto md:bg-transparent md:border-t-0 md:p-0 md:pt-2 md:z-auto">
                   <button
                     onClick={() => setShowBookingForm(true)}
@@ -657,8 +659,8 @@ export default function ProviderDetailPage() {
                 </div>
               )}
 
-              {/* Booking Form - Clean Modal Layout */}
-              {showBookingForm && user && (
+              {/* Booking Form - Clean Modal Layout (Hidden for Providers) */}
+              {showBookingForm && user && user.role?.toLowerCase() !== 'provider' && (
                 <div className="border-t border-slate-200 pt-6 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
                   {/* Clean Header */}
                   <h3 className="text-xl font-bold text-slate-900 mb-1">
@@ -818,6 +820,7 @@ export default function ProviderDetailPage() {
                 </div>
               )}
 
+              {/* Login prompt - Hidden for Providers (they can't book anyway) */}
               {!user && (
                 <div className="border-t-2 border-slate-200 pt-6">
                   <div className="bg-gradient-to-br from-slate-50 to-blue-50 p-6 rounded-xl text-center border-2 border-slate-200 shadow-inner">
