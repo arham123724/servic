@@ -129,13 +129,13 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
     <>
       <Link href={`/provider/${provider._id}`} className="block h-full">
         <div className={`rounded-xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden cursor-pointer h-full flex flex-col ${isDemoAccount
-            ? 'relative border-2 border-dashed border-blue-500 bg-blue-50 shadow-xl transform scale-105 z-10'
-            : 'bg-white border border-slate-200 hover:border-slate-300'
+          ? 'relative border-2 border-dashed border-blue-500 bg-blue-50 shadow-xl transform scale-105 z-10'
+          : 'bg-white border border-slate-200 hover:border-slate-300'
           }`}>
           {/* Demo Badge */}
           {isDemoAccount && (
             <div className="absolute top-0 inset-x-0 bg-blue-600 text-white text-[10px] font-bold py-1 text-center uppercase tracking-widest rounded-t-lg z-20">
-              ⭐ Recommended for Demo ⭐
+              ⭐ Demo Provider ⭐
             </div>
           )}
           {/* Card Content */}
