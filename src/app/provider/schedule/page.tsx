@@ -332,21 +332,38 @@ export default function ProviderSchedulePage() {
               const isClientUser = user?.role === "user";
 
               // Choose which contact info to show based on the logged-in user's role
-              const populatedProvider = booking.providerId as any | null;
+              // Normalize possible populated provider object (Mongoose may return plain object or Document)
+              const rawProvider = booking.providerId as any;
+              const populatedProvider =
+                rawProvider && typeof rawProvider === "object" ? rawProvider : null;
 
-              const displayName = isClientUser
-                ? // client is viewing: show provider info (populated as providerId)
-                  (populatedProvider && populatedProvider.name) || "Provider"
-                : // provider is viewing: show client info
-                  booking.clientName || "Client";
+              const providerName =
+                populatedProvider?.name || populatedProvider?._doc?.name;
+              const providerEmail =
+                populatedProvider?.email || populatedProvider?._doc?.email;
+              const providerPhone =
+                populatedProvider?.phone || populatedProvider?._doc?.phone;
 
-              const displayEmail = isClientUser
-                ? (populatedProvider && populatedProvider.email) || ""
-                : booking.clientEmail || "";
+              let displayName: string;
+              let displayEmail: string;
+              let displayPhone: string;
 
-              const displayPhone = isClientUser
-                ? (populatedProvider && populatedProvider.phone) || ""
-                : booking.clientPhone || "";
+              if (isClientUser) {
+                // client view -> show provider info first
+                displayName = providerName || booking.clientName || "Provider";
+                displayEmail = providerEmail || booking.providerEmail || booking.clientEmail || "";
+                displayPhone = providerPhone || booking.providerPhone || booking.clientPhone || "";
+              } else if (isProviderUser) {
+                // provider view -> show client info first
+                displayName = booking.clientName || providerName || "Client";
+                displayEmail = booking.clientEmail || providerEmail || "";
+                displayPhone = booking.clientPhone || providerPhone || "";
+              } else {
+                // fallback
+                displayName = providerName || booking.clientName || "Unknown";
+                displayEmail = providerEmail || booking.clientEmail || "";
+                displayPhone = providerPhone || booking.clientPhone || "";
+              }
 
               return (
                 <div
@@ -391,16 +408,24 @@ export default function ProviderSchedulePage() {
                           <span>{formatTime(booking.timeSlot)}</span>
                         </div>
                         <div className="flex items-center gap-2 text-slate-500 text-sm mt-1">
-                          <Mail className="w-4 h-4 text-slate-400" />
-                          <a href={`mailto:${displayEmail}`} className="hover:text-[#1e3a8a] font-medium">
-                            {displayEmail}
-                          </a>
+                            <Mail className="w-4 h-4 text-slate-400" />
+                            {displayEmail ? (
+                              <a href={`mailto:${displayEmail}`} className="hover:text-[#1e3a8a] font-medium">
+                                {displayEmail}
+                              </a>
+                            ) : (
+                              <span className="text-slate-400">No email</span>
+                            )}
                         </div>
                         <div className="flex items-center gap-2 text-slate-500 text-sm mt-1">
                           <Phone className="w-4 h-4 text-slate-400" />
-                          <a href={`tel:${displayPhone}`} className="hover:text-[#1e3a8a] font-medium">
-                            {displayPhone}
-                          </a>
+                            {displayPhone ? (
+                              <a href={`tel:${displayPhone}`} className="hover:text-[#1e3a8a] font-medium">
+                                {displayPhone}
+                              </a>
+                            ) : (
+                              <span className="text-slate-400">No phone</span>
+                            )}
                         </div>
                       </div>
                     </div>
