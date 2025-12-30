@@ -195,7 +195,7 @@ export default function LoginPage() {
                     disabled={loading}
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    👤 Log in as Client
+                    👤 Log in as Demo Client
                   </button>
                   <button
                     type="button"
@@ -203,7 +203,7 @@ export default function LoginPage() {
                     disabled={loading}
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-emerald-700 bg-emerald-100 hover:bg-emerald-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    🛠️ Log in as Provider
+                    🛠️ Log in as Demo Provider
                   </button>
                 </div>
               </div>
