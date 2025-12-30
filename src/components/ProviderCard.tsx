@@ -23,6 +23,9 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
+  // Internal check: Is this the specific card we want to highlight?
+  const isDemoAccount = provider.name === 'Muhammad Ali';
+
   // Helper function to format time (24h to 12h)
   const formatTime = (time: string): string => {
     if (!time) return "";
@@ -125,9 +128,18 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
   return (
     <>
       <Link href={`/provider/${provider._id}`} className="block h-full">
-        <div className="bg-white rounded-xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden border border-slate-200 cursor-pointer hover:border-slate-300 h-full flex flex-col">
+        <div className={`rounded-xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden cursor-pointer h-full flex flex-col ${isDemoAccount
+            ? 'relative border-2 border-dashed border-blue-500 bg-blue-50 shadow-xl transform scale-105 z-10'
+            : 'bg-white border border-slate-200 hover:border-slate-300'
+          }`}>
+          {/* Demo Badge */}
+          {isDemoAccount && (
+            <div className="absolute top-0 inset-x-0 bg-blue-600 text-white text-[10px] font-bold py-1 text-center uppercase tracking-widest rounded-t-lg z-20">
+              ⭐ Recommended for Demo ⭐
+            </div>
+          )}
           {/* Card Content */}
-          <div className="p-5 grow">
+          <div className={`p-5 grow ${isDemoAccount ? 'pt-9' : ''}`}>
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-semibold text-slate-800">
