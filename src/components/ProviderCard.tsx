@@ -127,7 +127,7 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
       <Link href={`/provider/${provider._id}`} className="block h-full">
         <div className="bg-white rounded-xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden border border-slate-200 cursor-pointer hover:border-slate-300 h-full flex flex-col">
           {/* Card Content */}
-          <div className="p-5 flex-grow">
+          <div className="p-5 grow">
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-semibold text-slate-800">
@@ -194,7 +194,7 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
 
             {/* Working Hours */}
             <div className="flex items-center gap-2 text-sm text-slate-600 mb-3 bg-slate-50 px-3 py-2 rounded-lg">
-              <Clock className="w-4 h-4 text-[#1e3a8a] flex-shrink-0" />
+              <Clock className="w-4 h-4 text-[#1e3a8a] shrink-0" />
               <span className="font-medium">{getWorkingHours()}</span>
               <span className="text-xs text-slate-400 bg-slate-200 px-2 py-0.5 rounded-full">
                 {getWorkingDays()}
@@ -229,7 +229,7 @@ export default function ProviderCard({ provider }: ProviderCardProps) {
 
       {/* Toast Notification */}
       {showToast && (
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[200] animate-fade-in">
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-200 animate-fade-in">
           <div className="bg-slate-900 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700">
             <span className="font-medium">{toastMessage}</span>
           </div>

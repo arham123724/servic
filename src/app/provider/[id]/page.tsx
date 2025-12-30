@@ -431,7 +431,7 @@ export default function ProviderDetailPage() {
             <div className="px-6 py-8 border-b border-slate-200">
               <div className="flex items-start gap-6">
                 {/* Large Avatar */}
-                <div className="w-28 h-28 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center flex-shrink-0 border-2 border-slate-300">
+                <div className="w-28 h-28 bg-linear-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center shrink-0 border-2 border-slate-300">
                   <span className="text-5xl font-bold text-slate-700">
                     {provider.name.charAt(0).toUpperCase()}
                   </span>
@@ -842,7 +842,7 @@ export default function ProviderDetailPage() {
 
               {/* Booking Form - Responsive: Modal on Mobile, Inline on Desktop */}
               {showBookingForm && user && user.role?.toLowerCase() !== 'provider' && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:static md:z-0 md:bg-transparent md:backdrop-blur-none md:p-0 md:block md:mt-6">
+                <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:static md:z-0 md:bg-transparent md:backdrop-blur-none md:p-0 md:block md:mt-6">
                   <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 md:max-w-none md:max-h-none md:shadow-none md:border md:border-slate-200">
                     {/* Clean Header */}
                     <h3 className="text-xl font-bold text-slate-900 mb-1">

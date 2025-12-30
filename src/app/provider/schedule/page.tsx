@@ -336,7 +336,7 @@ export default function ProviderSchedulePage() {
 
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-start gap-3">
-                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold flex-shrink-0 ${isProviderBooking ? "bg-green-600" : "bg-[#2563EB]"}`}>
+                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold shrink-0 ${isProviderBooking ? "bg-green-600" : "bg-[#2563EB]"}`}>
                         {booking.clientName.charAt(0).toUpperCase()}
                       </div>
                       <div>
