@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Briefcase, Mail, Lock, Eye, EyeOff } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";import { validateEmail, getEmailError } from "@/lib/validation";
+import { useAuth } from "@/context/AuthContext"; import { validateEmail, getEmailError } from "@/lib/validation";
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
@@ -56,12 +56,42 @@ export default function LoginPage() {
     }
   };
 
+  // One-Click Demo Login Handler
+  const handleDemoLogin = async (role: 'client' | 'provider') => {
+    setLoading(true);
+    setError("");
+
+    // Select credentials based on button clicked
+    const email = role === 'client' ? 'arham@test.com' : 'ali@electrician.com';
+    const password = role === 'client' ? 'arham1234' : '123456';
+
+    try {
+      const result = await login(email, password);
+
+      if (result.success) {
+        // Redirect to the correct page based on role
+        if (role === 'client') {
+          router.push('/'); // Client goes to Home to book
+        } else {
+          router.push('/schedule'); // Provider goes to Schedule to view bookings
+        }
+      } else {
+        setError('Demo user not found! Check database.');
+      }
+    } catch (err) {
+      setError('Demo login failed. Please try again.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Minimal Header */}
       <header className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2">
               <div className="bg-slate-900 p-2 rounded-lg shadow-md">
                 <Briefcase className="w-6 h-6 text-white" />
@@ -150,6 +180,37 @@ export default function LoginPage() {
                   "Log In"
                 )}
               </button>
+
+              {/* DEMO SECTION - ONLY FOR PRESENTATION */}
+              <div className="mt-6">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white text-gray-500">Demo Access</span>
+                  </div>
+                </div>
+
+                <div className="mt-4 space-y-3">
+                  <button
+                    type="button"
+                    onClick={() => handleDemoLogin('client')}
+                    disabled={loading}
+                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    👤 Client (Arham)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDemoLogin('provider')}
+                    disabled={loading}
+                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-emerald-700 bg-emerald-100 hover:bg-emerald-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    🛠️ Provider (Ali)
+                  </button>
+                </div>
+              </div>
 
               {/* Signup Link */}
               <p className="text-center text-slate-600 text-sm pt-2">
