@@ -52,6 +52,10 @@ export default function ProviderSchedulePage() {
         const clientData = await clientRes.json();
         const providerData = await providerRes.json();
 
+        // Log API payloads for validation
+        console.log("/api/bookings ->", clientData);
+        console.log("/api/bookings/my-provider-bookings ->", providerData);
+
         const allBookings = [];
 
         // Add client bookings
@@ -323,10 +327,26 @@ export default function ProviderSchedulePage() {
         ) : (
           <div className="space-y-4">
             {sortedBookings.map((booking) => {
-              // FIXED: Strictly compare emails
-              // If logged-in user's email matches booking's providerEmail, they are the provider
-              // LOGIC: If I am NOT the client, I must be the provider.
-              const isProviderBooking = booking.clientEmail !== user?.email;
+              // Determine viewing role
+              const isProviderUser = user?.role === "provider";
+              const isClientUser = user?.role === "user";
+
+              // Choose which contact info to show based on the logged-in user's role
+              const populatedProvider = booking.providerId as any | null;
+
+              const displayName = isClientUser
+                ? // client is viewing: show provider info (populated as providerId)
+                  (populatedProvider && populatedProvider.name) || "Provider"
+                : // provider is viewing: show client info
+                  booking.clientName || "Client";
+
+              const displayEmail = isClientUser
+                ? (populatedProvider && populatedProvider.email) || ""
+                : booking.clientEmail || "";
+
+              const displayPhone = isClientUser
+                ? (populatedProvider && populatedProvider.phone) || ""
+                : booking.clientPhone || "";
 
               return (
                 <div
@@ -336,7 +356,7 @@ export default function ProviderSchedulePage() {
                 >
                   {/* Booking Type Badge and New Badge */}
                   <div className="mb-3 flex items-center gap-2 flex-wrap">
-                    {isProviderBooking ? (
+                    {isProviderUser ? (
                       <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
                         📥 Booking from Client
                       </span>
@@ -354,12 +374,12 @@ export default function ProviderSchedulePage() {
 
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-start gap-3">
-                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold shrink-0 ${isProviderBooking ? "bg-green-600" : "bg-[#2563EB]"}`}>
-                        {booking.clientName.charAt(0).toUpperCase()}
+                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold shrink-0 ${isProviderUser ? "bg-green-600" : "bg-[#2563EB]"}`}>
+                        {(displayName && displayName.charAt(0).toUpperCase()) || "?"}
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-slate-800">
-                          {booking.clientName}
+                          {displayName}
                         </h3>
                         <div className="flex items-center gap-2 text-sm text-slate-500">
                           <Calendar className="w-4 h-4" />
@@ -372,14 +392,14 @@ export default function ProviderSchedulePage() {
                         </div>
                         <div className="flex items-center gap-2 text-slate-500 text-sm mt-1">
                           <Mail className="w-4 h-4 text-slate-400" />
-                          <a href={`mailto:${booking.clientEmail}`} className="hover:text-[#1e3a8a] font-medium">
-                            {booking.clientEmail}
+                          <a href={`mailto:${displayEmail}`} className="hover:text-[#1e3a8a] font-medium">
+                            {displayEmail}
                           </a>
                         </div>
                         <div className="flex items-center gap-2 text-slate-500 text-sm mt-1">
                           <Phone className="w-4 h-4 text-slate-400" />
-                          <a href={`tel:${booking.clientPhone}`} className="hover:text-[#1e3a8a] font-medium">
-                            {booking.clientPhone}
+                          <a href={`tel:${displayPhone}`} className="hover:text-[#1e3a8a] font-medium">
+                            {displayPhone}
                           </a>
                         </div>
                       </div>
@@ -405,7 +425,7 @@ export default function ProviderSchedulePage() {
                   )}
 
                   {/* Approve/Reject buttons for provider bookings that are pending */}
-                  {isProviderBooking && booking.status === "pending" && (
+                  {isProviderUser && booking.status === "pending" && (
                     <div className="flex gap-3 pt-4 border-t">
                       <button
                         onClick={() => handleApproveBooking(booking._id)}

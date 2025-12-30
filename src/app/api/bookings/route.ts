@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Booking from "@/models/Booking";
+import "@/models/Provider"; // ensure Provider schema is registered for populate
 import { getSession } from "@/lib/auth";
 import { validatePhone, getPhoneError } from "@/lib/validation";
 
