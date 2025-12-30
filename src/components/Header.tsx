@@ -9,31 +9,39 @@ export default function Header() {
   const { user, logout, loading } = useAuth();
   const [newBookingsCount, setNewBookingsCount] = useState(0);
 
-  useEffect(() => {
-    const fetchNewBookingsCount = async () => {
-      if (!user) return;
+  // Fetch and update pending bookings count
+  const fetchNewBookingsCount = async () => {
+    if (!user) return;
 
-      try {
-        const res = await fetch("/api/bookings/my-provider-bookings");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success && data.data) {
-            // Count pending bookings (not just isNew)
-            const pendingCount = data.data.filter((b: any) => b.status === 'pending').length;
-            setNewBookingsCount(pendingCount);
-          }
+    try {
+      const res = await fetch("/api/bookings/my-provider-bookings");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.data) {
+          const pendingCount = data.data.filter((b: any) => b.status === 'pending').length;
+          setNewBookingsCount(pendingCount);
         }
-      } catch (error) {
-        console.error("Failed to fetch new bookings count:", error);
       }
-    };
-
-    if (user) {
-      fetchNewBookingsCount();
-      // Refresh every 30 seconds
-      const interval = setInterval(fetchNewBookingsCount, 30000);
-      return () => clearInterval(interval);
+    } catch (error) {
+      console.error("Failed to fetch new bookings count:", error);
     }
+  };
+
+  useEffect(() => {
+    if (!user) return;
+
+    fetchNewBookingsCount();
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchNewBookingsCount, 30000);
+
+    // Listen for manual refresh events (dispatched when booking is accepted/rejected/read)
+    const handler = () => fetchNewBookingsCount();
+    window.addEventListener("refresh-booking-count", handler);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("refresh-booking-count", handler);
+    };
   }, [user]);
 
   return (

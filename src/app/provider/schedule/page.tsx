@@ -152,6 +152,12 @@ export default function ProviderSchedulePage() {
             b._id === bookingId ? { ...b, status: "confirmed", isNew: false } : b
           )
         );
+        // Tell header to refresh its count immediately
+        try {
+          window.dispatchEvent(new Event("refresh-booking-count"));
+        } catch (e) {
+          console.warn("Could not dispatch refresh-booking-count event", e);
+        }
       }
     } catch (error) {
       console.error("Error approving booking:", error);
@@ -177,6 +183,12 @@ export default function ProviderSchedulePage() {
             b._id === bookingId ? { ...b, status: "cancelled", isNew: false } : b
           )
         );
+        // Tell header to refresh its count immediately
+        try {
+          window.dispatchEvent(new Event("refresh-booking-count"));
+        } catch (e) {
+          console.warn("Could not dispatch refresh-booking-count event", e);
+        }
       }
     } catch (error) {
       console.error("Error rejecting booking:", error);
@@ -197,6 +209,12 @@ export default function ProviderSchedulePage() {
       setBookings((prev) =>
         prev.map((b) => (b._id === bookingId ? { ...b, isNew: false } : b))
       );
+      // Tell header to refresh its count immediately
+      try {
+        window.dispatchEvent(new Event("refresh-booking-count"));
+      } catch (e) {
+        console.warn("Could not dispatch refresh-booking-count event", e);
+      }
     } catch (error) {
       console.error("Error marking as read:", error);
     }
