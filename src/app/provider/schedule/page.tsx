@@ -69,11 +69,31 @@ export default function ProviderSchedulePage() {
         }
 
         // --- CRITICAL FIX: DEDUPLICATION LOGIC ---
-        // This removes duplicate bookings if the API returns the same item twice
-        // It creates a Map using the _id as the key, effectively keeping only unique items
-        const uniqueBookings = Array.from(
-          new Map(allBookings.map((item) => [item._id, item])).values()
-        );
+        // We use a Map to ensure unique bookings by ID.
+        // IMPROVEMENT: Prioritize the version of the booking that has a populated providerId object.
+        const bookingsMap = new Map<string, Booking>();
+
+        allBookings.forEach((booking) => {
+          const existing = bookingsMap.get(booking._id);
+
+          if (!existing) {
+            bookingsMap.set(booking._id, booking);
+          } else {
+            // Logic to decide which version to keep
+            // We want the one where providerId is an OBJECT (populated), not just a string
+            const existingHasProvider = typeof existing.providerId === 'object' && existing.providerId !== null;
+            const newHasProvider = typeof booking.providerId === 'object' && booking.providerId !== null;
+
+            if (!existingHasProvider && newHasProvider) {
+              // Replace with the better version (populated provider)
+              bookingsMap.set(booking._id, booking);
+            }
+            // If existing already has it, we keep existing.
+            // If neither has it, it doesn't matter (we keep existing).
+          }
+        });
+
+        const uniqueBookings = Array.from(bookingsMap.values());
         // -----------------------------------------
 
         setBookings(uniqueBookings);
@@ -348,16 +368,25 @@ export default function ProviderSchedulePage() {
               let displayEmail: string;
               let displayPhone: string;
 
+              // LOGGING FOR DEBUGGING
+              console.log(`[Booking Render] ID: ${booking._id}, Role: ${user?.role}`);
+              console.log(" - ProviderId Raw:", booking.providerId);
+
               if (isClientUser) {
                 // client view -> show provider info first
-                displayName = providerName || booking.clientName || "Provider";
-                displayEmail = providerEmail || booking.providerEmail || booking.clientEmail || "";
-                displayPhone = providerPhone || booking.providerPhone || booking.clientPhone || "";
+                // FIX: Do NOT fallback to clientName, otherwise client sees their own name if provider data is missing
+                displayName = providerName || "Provider (Details Hidden)";
+                displayEmail = providerEmail || booking.providerEmail || "No Email";
+                displayPhone = providerPhone || booking.providerPhone || "No Phone";
+
+                console.log(" - View: Client. Displaying:", displayName);
               } else if (isProviderUser) {
                 // provider view -> show client info first
                 displayName = booking.clientName || providerName || "Client";
                 displayEmail = booking.clientEmail || providerEmail || "";
                 displayPhone = booking.clientPhone || providerPhone || "";
+
+                console.log(" - View: Provider. Displaying:", displayName);
               } else {
                 // fallback
                 displayName = providerName || booking.clientName || "Unknown";
@@ -408,24 +437,24 @@ export default function ProviderSchedulePage() {
                           <span>{formatTime(booking.timeSlot)}</span>
                         </div>
                         <div className="flex items-center gap-2 text-slate-500 text-sm mt-1">
-                            <Mail className="w-4 h-4 text-slate-400" />
-                            {displayEmail ? (
-                              <a href={`mailto:${displayEmail}`} className="hover:text-[#1e3a8a] font-medium">
-                                {displayEmail}
-                              </a>
-                            ) : (
-                              <span className="text-slate-400">No email</span>
-                            )}
+                          <Mail className="w-4 h-4 text-slate-400" />
+                          {displayEmail ? (
+                            <a href={`mailto:${displayEmail}`} className="hover:text-[#1e3a8a] font-medium">
+                              {displayEmail}
+                            </a>
+                          ) : (
+                            <span className="text-slate-400">No email</span>
+                          )}
                         </div>
                         <div className="flex items-center gap-2 text-slate-500 text-sm mt-1">
                           <Phone className="w-4 h-4 text-slate-400" />
-                            {displayPhone ? (
-                              <a href={`tel:${displayPhone}`} className="hover:text-[#1e3a8a] font-medium">
-                                {displayPhone}
-                              </a>
-                            ) : (
-                              <span className="text-slate-400">No phone</span>
-                            )}
+                          {displayPhone ? (
+                            <a href={`tel:${displayPhone}`} className="hover:text-[#1e3a8a] font-medium">
+                              {displayPhone}
+                            </a>
+                          ) : (
+                            <span className="text-slate-400">No phone</span>
+                          )}
                         </div>
                       </div>
                     </div>
